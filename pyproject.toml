@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "suscomp"
+version = "0.1.0"
+# Other metadata...
+
+[tool.setuptools.packages.find]
+where = ["src"]  # This tells setuptools to look in src/
