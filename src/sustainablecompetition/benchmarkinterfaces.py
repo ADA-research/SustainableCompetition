@@ -1,7 +1,7 @@
 from typing import AsyncIterator
 from abc import ABC, abstractmethod
 
-from BenchmarkAtoms import Job, Result
+from benchmarkatoms import Job, Result
 
 
 class Benchmarker(ABC):

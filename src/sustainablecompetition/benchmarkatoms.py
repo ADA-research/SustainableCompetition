@@ -42,6 +42,11 @@ class Job:
 
     # ---- called by submitter when enqueuing ----
     def mark_submitted(self) -> None:
+        if self.state == JobState.SUBMITTED:
+            #TODO maybe add a warning message to indicate that job was already submitted
+            if self.submitted_at is None:
+                self.submitted_at = datetime.now(timezone.utc)
+            return
         if self.state != JobState.CREATED:
             raise JobStateError(f"Cannot mark job as SUBMITTED from state {self.state.name}")
         self.state = JobState.SUBMITTED
@@ -49,6 +54,9 @@ class Job:
 
     # ---- called by worker when handing off to external system ----
     async def mark_running(self) -> None:
+        if self.state == JobState.RUNNING:
+            #TODO maybe add a warning message to indicate that job was already submitted
+            return
         if self.state != JobState.SUBMITTED:
             raise JobStateError(f"Cannot mark job as RUNNING from state {self.state.name}")
         self.state = JobState.RUNNING
