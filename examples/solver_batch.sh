@@ -1,31 +1,37 @@
-#!/bin/bash
+#!/bin/bash -x
 #SBATCH --job-name=solver_batch
-#SBATCH --output=solver_batch%A.out
-#SBATCH --error=solver_batch%A.err
+#SBATCH --output=solver_batch.out
+#SBATCH --error=solver_batch.err
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=32         # Total cores on the node (adjust as needed)
+#SBATCH --cpus-per-task=64         
 #SBATCH --mem=0                    # Use all memory on the node
-#SBATCH --exclusive                # Reserve the full node
+#SBATCH --exclusive                
 
 # Define arrays for cores and memory per instance
-cores_array=(4 8 16 32)              # Cores for each instance
-mem_array=(32G 64G 128G 256G)            # Memory for each instance
+cores_array=(4 8 16 32)              # Cores for each run
+mem_array=(32 64 128 256)            # Memory for each run
 
 # Get the number of physical CPUs (sockets)
 num_sockets=$(lscpu | grep "Socket(s)" | awk '{print $2}')
 
 # Launch one instance per socket
-for socket in $(seq 0 1); do
-    current_cores=${cores_array[$socket]}
-    current_mem=${mem_array[$socket]}
-    # Get environment hash
-    env_hash=$(./update_environment.sh $current_cores 64 $current_mem)
+for current_cores in "${cores_array[@]}"; do
+    for current_mem in "${mem_array[@]}"; do
+        echo "Current cores: $current_cores, Current mem: $current_mem"
+        # Get environment hash
+        env_hash=$(bash ./save_environment.sh $current_cores $current_mem)
 
-    # Bind to the specific socket and run the script in the background
-    numactl --cpunodebind=$socket --membind=$socket \
-        taskset -c $((socket * 32))-$((socket * 32 + current_cores - 1)) \
-        ./run_solver.sh > "output_${env_hash}_${socket}.log" 2>&1 &
+        for socket in $(seq 0 1); do
+            for run in $(seq 0 5); do
+                # Bind to the specific socket and run the script in the background
+                srun --cpus-per-task=$current_cores \
+                    --mem=$current_mem \
+                    --cpu-bind=sockets \
+                    bash ./run_solver.sh > "output_${env_hash}_${socket}_${run}.log" 2>&1 &
+            done
+        done
+    done
 done
 
 # Wait for all background processes to finish

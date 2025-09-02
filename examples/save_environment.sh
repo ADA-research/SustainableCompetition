@@ -5,14 +5,14 @@ CSV_FILE="run_environment.csv"
 
 # Collect environment features
 nb_assigned_cores=$1
-nb_available_core=$2
-assigned_memory=$3
+nb_available_core=$(lscpu | grep "Core(s) per socket" | awk '{print $4}')
+assigned_memory=$2
 machine_memory=$(free -m | awk '/Mem:/ {print $2}')
 memory_type="DDR4"  # Adjust or detect dynamically if possible
 OS=$(grep -oP '(?<=^NAME=").+' /etc/os-release | tr -d '"')
 kernel_version=$(uname -r)
 activated_modules=$(module list 2>&1 | grep -v "No modules" | tr '\n' ';')
-cpu_freq=$(lscpu | grep "CPU MHz" | awk '{print $3}')
+cpu_freq=$(lscpu | grep "CPU max MHz" | awk '{print $4}')
 cpu_model=$(lscpu | grep "Model name" | cut -d':' -f2 | xargs)
 cpu_cache_size=$(lscpu | grep "L3 cache" | awk '{print $3}')
 
