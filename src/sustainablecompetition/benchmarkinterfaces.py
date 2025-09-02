@@ -29,7 +29,7 @@ class Infrastructure(ABC):
     @abstractmethod
     def submit(self, job: Job):
         """Submit a job to the external system."""
-        raise NotImplementedError
+        self.jobs.append(job)
     
     @abstractmethod
     def completed(self, job: Job) -> Result:
@@ -38,7 +38,7 @@ class Infrastructure(ABC):
         If the job has completed, return a Result object.
         Otherwise, return None.
         """
-        raise NotImplementedError
+        return Result(job, 0, 0)
 
     def completions(self) -> Iterator[Result]:
         """
@@ -46,14 +46,15 @@ class Infrastructure(ABC):
         """
         while True:
             for job in self.jobs:
-                if self.completed(job):
-                    yield Result(job)
+                result = self.completed(job)
+                if result is not None:
+                    yield result
                 else:
                     time.sleep(1)
 
     @abstractmethod
     def cancel(self, job: Job):
         """Best-effort cancellation if supported by the external system."""
-        return False
+        pass
 
 
