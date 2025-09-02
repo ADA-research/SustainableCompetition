@@ -2,6 +2,7 @@ from typing import Iterator
 from abc import ABC, abstractmethod
 
 from benchmarkatoms import Job, Result
+import time
 
 
 class Benchmarker(ABC):
@@ -17,21 +18,38 @@ class Benchmarker(ABC):
         raise NotImplementedError
 
 
-class Infrastructure(ABC):
+class Infrastructure(ABC):    
     """
     Adapter to execution environment (cluster, SLURM, K8s, cloud API, vendor queue).
     """
+    def __init__(self, benchmarker: Benchmarker):
+        self.benchmarker = benchmarker
+        self.jobs = list[Job]()
+
     @abstractmethod
     def submit(self, job: Job):
         """Submit a job to the external system."""
         raise NotImplementedError
-
+    
     @abstractmethod
+    def completed(self, job: Job) -> Result:
+        """
+        Check if a job has completed.
+        If the job has completed, return a Result object.
+        Otherwise, return None.
+        """
+        raise NotImplementedError
+
     def completions(self) -> Iterator[Result]:
         """
         Must yield whenever the external system reports a job as done/failed.
         """
-        raise NotImplementedError
+        while True:
+            for job in self.jobs:
+                if self.completed(job):
+                    yield Result(job)
+                else:
+                    time.sleep(1)
 
     @abstractmethod
     def cancel(self, job: Job):
