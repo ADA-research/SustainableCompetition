@@ -1,5 +1,5 @@
 """
-Local Runner Adapter
+Virtual Runner Adapter
 """
 
 import pandas as pd
