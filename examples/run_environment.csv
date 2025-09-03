@@ -1,17 +1,1 @@
-hash, nb_assigned_cores, nb_available_core, assigned_memory, machine_memory, memory_type, OS, kernel_version, activated_modules, cpu_freq, cpu_model, cpu_cache_size
-2d59c3ee16114e7d9e83ba9b50346cae,4,32,32,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-6ebcfc6bf8b37ea2b27b3ae0c0ea9a6d,4,32,64,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-17389565963cb266777a2c54671f712f,4,32,128,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-fab0ddfea16a3f2dc9fc1ec55b84af9a,4,32,256,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-69fb05cf78e338f2fbfbe837351792b1,8,32,32,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-2f6f08f7a41e9fb8af2f24814219596b,8,32,64,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-7f3aae9fa82f488f83b5a2fb8e2b0f7f,8,32,128,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-c436a41ae00dd321059b8cb619c97fd8,8,32,256,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-d641df2ebec0723bbb921bd14eb9a3fe,16,32,32,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-2369b3038ed4647ea8c129c2169411d1,16,32,64,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-003701928031744d7344d6e08fea4dae,16,32,128,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-adf46d3233b347048bfea8780435b19c,16,32,256,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-18409db63842090f81d8226189986c31,32,32,32,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-f013930e6037111a000a95a89ba917aa,32,32,64,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-4f2a446876b428c7d576b2e60427ad0e,32,32,128,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
-06ab1dc7e9ef004489a478a2e68a52bd,32,32,256,1031671,DDR4,Rocky Linux,5.14.0-362.24.1.el9_3.0.1.x86_64,,3737.8899,AMD EPYC 7543 32-Core Processor,512
+hash, nb_assigned_cores, nb_available_core, assigned_memory, machine_memory, OS, kernel_version, activated_modules, cpu_boost, cpu_freq, cpu_model, L1, L2, L3
