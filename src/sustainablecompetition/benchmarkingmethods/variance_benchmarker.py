@@ -12,6 +12,7 @@ import polars as pl
 
 __all__ = ["VarianceBenchmarker"]
 
+
 class VarianceBenchmarker(Benchmarker):
     def __init__(self, benchmark_ids: list[str], solver_id: str, data: DataAdapter):
         super().__init__(benchmark_ids, solver_id)
@@ -23,9 +24,8 @@ class VarianceBenchmarker(Benchmarker):
             perf_data = data.get_performances(benchmark_id)
             score = pl.var(perf_data) / pl.median(perf_data)
             ordered.append((score, benchmark_id))
-        ordered.sort(key=lambda x:x[0])
+        ordered.sort(key=lambda x: x[0])
         self.queue = [x[1] for x in ordered]
-
 
     def next_job(self) -> Job:
         if self.queue:

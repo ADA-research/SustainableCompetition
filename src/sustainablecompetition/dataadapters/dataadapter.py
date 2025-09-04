@@ -10,7 +10,7 @@ __all__ = ["DataAdapter"]
 
 class DataAdapter(ABC):
     """
-    Enables to interact with the data interactively without loading everything into memory. 
+    Enables to interact with the data interactively without loading everything into memory.
     """
 
     @abstractmethod
