@@ -1,0 +1,26 @@
++ '[' -z '' ']'
++ case "$-" in
++ __lmod_vx=x
++ '[' -n x ']'
++ set +x
+Shell debugging temporarily silenced: export LMOD_SH_DBG_ON=1 for this output (/opt/ohpc/admin/lmod/lmod/init/bash)
+Shell debugging restarted
++ unset __lmod_vx
++ cores_array=(4 8 16 32)
++ mem_array=(32 64 128 256)
+++ lscpu
+++ awk '{print $2}'
+++ grep 'Socket(s)'
++ num_sockets=2
++ for current_cores in "${cores_array[@]}"
++ for current_mem in "${mem_array[@]}"
+++ python ../src/utils/environment.py 4 32
++ env_hash=f445c32345a47e48d042506d11691c51
+++ seq 0 5
++ for run in $(seq 0 5)
+++ seq 0 1
++ for socket in $(seq 0 1)
++ for socket in $(seq 0 1)
++ srun --cpus-per-task=4 --mem=32 --cpu-bind=sockets bash ./run_solver.sh f445c32345a47e48d042506d11691c51 /storage/work/anastacio/SustainableCompetition/solvers/sat/main_2024/BreakID-Kissat/kissat ./00d1fe07ab948b348bb3fb423b1ef40d-lec_mult_KvW_12x11.sanitized.cnf 32 500
++ wait
++ srun --cpus-per-task=4 --mem=32 --cpu-bind=sockets bash ./run_solver.sh f445c32345a47e48d042506d11691c51 /storage/work/anastacio/SustainableCompetition/solvers/sat/main_2024/BreakID-Kissat/kissat ./00d1fe07ab948b348bb3fb423b1ef40d-lec_mult_KvW_12x11.sanitized.cnf 32 500
