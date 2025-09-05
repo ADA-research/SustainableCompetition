@@ -3,7 +3,6 @@ Adapter to execution environment (cluster, SLURM, K8s, cloud API, vendor queue).
 """
 
 from abc import ABC, abstractmethod
-from typing import Generator
 import time
 
 from sustainablecompetition.benchmarkatoms import Job, JobState, Result
@@ -35,7 +34,7 @@ class AbstractRunner(ABC):
         Otherwise, return None.
         """
 
-    def completions(self, sleep_duration: float = 1) -> Generator[Result, None, None]:
+    async def completions(self, sleep_duration: float = 1):
         """
         Yield whenever the external system reports a job as done/failed.
         Stops when all jobs are either CANCELLED, FAILED or FINISHED.
