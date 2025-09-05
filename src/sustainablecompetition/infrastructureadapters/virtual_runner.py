@@ -23,6 +23,7 @@ class VirtualRunner(AbstractRunner):
         """
         super().submit(job)
         job.external_id = len(self.jobs) - 1
+        job.mark_running()
 
     def completed(self, job: Job) -> Result:
         """
@@ -33,6 +34,7 @@ class VirtualRunner(AbstractRunner):
         instance = job.benchmark_id
         solver = job.solver_id
         runtime = self.runtimes.get_performances(instance, solver).item()
+        job.set_finished()
         return Result(job, runtime, 0)
 
     def cancel(self, job):
