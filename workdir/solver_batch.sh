@@ -26,15 +26,14 @@ for current_cores in "${cores_array[@]}"; do
                 break  # No more lines to read
             fi
 
+            instance1_hash=${instance1##*/}
             # Download the first file
-            wget "$instance1" -O "instance1.cnf.xz"
+            wget "$instance1" -O "${instance1_hash}.cnf.xz"
             wait $!  # Wait for wget to finish
 
             # Uncompress the first file
-            xz -d "instance1.cnf.xz"
-            uncompressed_file1="instance1.cnf"  # The uncompressed file will be named instance1.cnf
-
-            instance1_hash=${instance1##*/}
+            xz -d "${instance1_hash}.cnf.xz"
+            uncompressed_file1="${instance1_hash}.cnf"  # The uncompressed file will be named instance1.cnf
             
             # Read the second instance
             if ! IFS="" read -r instance2; then
@@ -44,37 +43,37 @@ for current_cores in "${cores_array[@]}"; do
                 echo "$output1,$env_hash,$instance1_hash,$1" >> kathleen_results.csv
 
                 # Clean up
-                rm -f "instance1.cnf.xz" "$uncompressed_file1"
+                rm -f "${instance1_hash}.cnf.xz" "$uncompressed_file1"
                 break
             fi
 
+            instance2_hash=${instance2##*/}
             # Download the second file
-            wget "$instance2" -O "instance2.cnf.xz"
+            wget "$instance2" -O "${instance2_hash}.cnf.xz"
             wait $!  # Wait for wget to finish
 
             # Uncompress the second file
-            xz -d "instance2.cnf.xz"
-            uncompressed_file2="instance2.cnf"  # The uncompressed file will be named instance2.cnf
+            xz -d "${instance2_hash}.cnf.xz"
+            uncompressed_file2="${instance2_hash}.cnf"  # The uncompressed file will be named instance2.cnf
 
-            instance2_hash=${instance2##*/}
 
             # Launch both instances in parallel
             (
                 output1=$(srun --cpus-per-task=$current_cores --mem=$current_mem --cpu-bind=sockets \
                     bash ./run_solver.sh "$env_hash" "$1" "$uncompressed_file1" "$current_mem" 5000 2>&1)
-                echo "$output1,$env_hash,$instance1_hash,,$1" >> kathleen_results.csv
+                echo "$output1,$env_hash,$instance1_hash,$1" >> kathleen_results.csv
             ) &
 
             (
                 output2=$(srun --cpus-per-task=$current_cores --mem=$current_mem --cpu-bind=sockets \
                     bash ./run_solver.sh "$env_hash" "$1" "$uncompressed_file2" "$current_mem" 5000 2>&1)
-                echo "$output2,$env_hash,$instance2_hash,,$1" >> kathleen_results.csv
+                echo "$output2,$env_hash,$instance2_hash,$1" >> kathleen_results.csv
             ) &
 
             wait  # Wait for both srun processes to finish
 
             # Clean up both instances' files
-            rm -f "instance1.cnf.xz" "$uncompressed_file1" "instance2.cnf.xz" "$uncompressed_file2"
+            rm -f "${instance1_hash}.cnf.xz" "$uncompressed_file1" "${instance2_hash}.cnf.xz" "$uncompressed_file2"
         done < ../instances/sat/main_2024/main_2024.uri
 
 

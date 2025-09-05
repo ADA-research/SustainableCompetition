@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-"""Template for users to create Python solver wrappers."""
+
 
 import re
 import subprocess
@@ -42,7 +42,12 @@ elif output_str.find("UNSATISFIABLE")> -1:
 elif output_str.find("SATISFIABLE")>-1:
     status="SAT"
 
-outdir = {"status": status, "quality": re.search(r"total CPU time \(s\): (\d+\.\d+)", output_str).group(1), "solver_call": solver_cmd}
+try:
+    rtime = re.search(r"total CPU time \(s\): (\d+\.\d+)", output_str).group(1)
+except IndexError:
+    rtime = 0
 
-print(",".join([status, re.search(r"total CPU time \(s\): (\d+\.\d+)", output_str).group(1)]))
+outdir = {"status": status, "quality": rtime, "solver_call": solver_cmd}
+
+print(",".join([status, rtime]))
 
