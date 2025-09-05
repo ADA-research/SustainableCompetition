@@ -32,10 +32,7 @@ builders = [
     ),
 ]
 
-TEST_IDS = [
-    "TrivialBenchmarker",
-    "VarianceBenchmarker"
-]
+TEST_IDS = ["TrivialBenchmarker", "VarianceBenchmarker"]
 
 
 @pytest.mark.parametrize("benchmarker_builder", builders, ids=TEST_IDS)
