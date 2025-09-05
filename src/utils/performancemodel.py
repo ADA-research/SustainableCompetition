@@ -16,19 +16,17 @@ class PerformanceModel:
     Returns:
         _type_: _description_
     """
-    
+
     def __init__(self):
-        """Initialises the model 
-        
+        """Initialises the model
+
         Args:
             should take the RF parameters
 
         """
         self.model = RandomForestRegressor(n_estimators=100, random_state=42)
 
-    
-
-    def train(self, X,Y):
+    def train(self, X, Y):
         """train the model
         for now very basic but could be better tailored in the future (handling saturated right tail for example)
         """
@@ -46,19 +44,18 @@ class PerformanceModel:
         Returns:
             _type_: _description_
         """
-        
+
         return self.model.predict(x_input)
 
 
 if __name__ == "__main__":
-
     data = CsvDataAdaptor(pl.DataFrame())
     data.get_performances("environments.csv", "instances.csv", "solvers.csv", "performances.csv")
     # Drop hash columns and status, keep only features and perf
-    X = data.df.drop(["env_hash", "inst_hash", "solver_hash", "status","perf"])
+    X = data.df.drop(["env_hash", "inst_hash", "solver_hash", "status", "perf"])
     # for this test, also drop non numerical data TODO handle them better
     print(X.columns)
-    X = X.drop(["kernel_version","activated_modules","cpu_brand","cpu_model","solver_name"])
+    X = X.drop(["kernel_version", "activated_modules", "cpu_brand", "cpu_model", "solver_name"])
     y_perfs = data.df["perf"].to_numpy()
     y_status = data.df["status"].to_numpy()
     # Initialize
@@ -68,5 +65,3 @@ if __name__ == "__main__":
     y_pred = rf.predict(X_test)
     mse = mean_squared_error(y_test, y_pred)
     print(f"MSE predict performance: {mse}")
-
-

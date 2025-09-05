@@ -21,7 +21,7 @@ class CsvDataAdaptor(DataAdaptor):
                 - other columns: the ids of the solvers
         """
         self.df = df
-    
+
     def get_performances(self, environments_path, instances_path, solvers_path, performances_path):
         """Reads the csv files, loads the data into memory, and prepare it
 
@@ -42,6 +42,5 @@ class CsvDataAdaptor(DataAdaptor):
 
         # Merge with solvers on solver_hash
         self.df = self.df.join(self.solvers, left_on="solver_hash", right_on="solver_hash", how="left")
-        
+
         return self.df
-        

@@ -33,14 +33,14 @@ output_str = solver_call.stdout.decode()
 # Optional: Print original output so the solution can be verified by SolutionVerifier
 
 status = "CRASHED"
-if output_str.find("Maximum CPU time exceeded")>-1:
+if output_str.find("Maximum CPU time exceeded") > -1:
     status = "TIMEOUT"
-elif output_str.find("Maximum VSize exceeded")> -1:
+elif output_str.find("Maximum VSize exceeded") > -1:
     status = "MEMOUT"
-elif output_str.find("UNSATISFIABLE")> -1:
-    status= "UNSAT"
-elif output_str.find("SATISFIABLE")>-1:
-    status="SAT"
+elif output_str.find("UNSATISFIABLE") > -1:
+    status = "UNSAT"
+elif output_str.find("SATISFIABLE") > -1:
+    status = "SAT"
 
 try:
     rtime = re.search(r"total CPU time \(s\): (\d+\.\d+)", output_str).group(1)
@@ -50,4 +50,3 @@ except IndexError:
 outdir = {"status": status, "quality": rtime, "solver_call": solver_cmd}
 
 print(",".join([status, rtime]))
-

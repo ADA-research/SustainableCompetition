@@ -24,7 +24,7 @@ def save_environment(nb_assigned_cores, assigned_memory, csv_file="run_environme
     Returns:
         str: hash of the environment
     """
-    
+
     # Collect CPU information using py-cpuinfo
     cpu_info = cpuinfo.get_cpu_info()
 

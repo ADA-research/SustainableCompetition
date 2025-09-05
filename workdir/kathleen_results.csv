@@ -153,3 +153,5 @@ MEMOUT,845.696,b896c5aec72d19ea1e52759bb07965f9,00d1fe07ab948b348bb3fb423b1ef40d
 UNSAT,3.46461,21273e103038a4db0d6f3d56e525023d,02066c116dbacc40ec5cca2067db26c0,,/storage/work/anastacio/SustainableCompetition/solvers/sat/main_2024/hCaD/cadical
 MEMOUT,1028.95,296b6bec49be169319fc9a93316433cd,00d1fe07ab948b348bb3fb423b1ef40d,,/storage/work/anastacio/SustainableCompetition/solvers/sat/main_2024/SBVA-scavel-01/cadical
 UNSAT,7.53338,21273e103038a4db0d6f3d56e525023d,02066c116dbacc40ec5cca2067db26c0,,/storage/work/anastacio/SustainableCompetition/solvers/sat/main_2024/SBVA-scavel-01/cadical
+MEMOUT,1029.73,12467bb4262c0648f175457a8a591ec2,00d1fe07ab948b348bb3fb423b1ef40d,,/storage/work/anastacio/SustainableCompetition/solvers/sat/main_2024/cadical-scavel-01/cadical
+UNSAT,7.52628,dab6fc1b75b6630861a8b84823c62b37,02066c116dbacc40ec5cca2067db26c0,,/storage/work/anastacio/SustainableCompetition/solvers/sat/main_2024/cadical-scavel-01/cadical
