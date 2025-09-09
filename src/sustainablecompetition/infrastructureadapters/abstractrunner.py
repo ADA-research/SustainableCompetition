@@ -6,7 +6,10 @@ from abc import ABC, abstractmethod
 from typing import Generator
 import time
 
+from sustainablecompetition.benchmarkadapters.abstractinstance import AbstractInstanceAdapter
+from sustainablecompetition.solveradapters.abstractsolver import AbstractSolverAdapter
 from sustainablecompetition.benchmarkatoms import Job, JobState, Result
+from sustainablecompetition.infrastructureadapters.executionwrapper import AbstractExecutionWrapper
 
 
 __all__ = ["AbstractRunner"]
@@ -17,8 +20,13 @@ FINISHED_STATES = {JobState.CANCELLED, JobState.FAILED, JobState.FINISHED}
 class AbstractRunner(ABC):
     """Interface for Runners"""
 
-    def __init__(self):
+    def __init__(
+        self, solver_adapter: AbstractSolverAdapter = None, instance_adapter: AbstractInstanceAdapter = None, execution_wrapper: AbstractExecutionWrapper = None
+    ):
         self.jobs = list[Job]()
+        self.execution_wrapper = execution_wrapper
+        self.instance_adapter = instance_adapter
+        self.solver_adapter = solver_adapter
 
     @abstractmethod
     def submit(self, job: Job):

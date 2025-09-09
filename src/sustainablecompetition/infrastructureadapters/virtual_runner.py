@@ -13,7 +13,7 @@ class VirtualRunner(AbstractRunner):
     """
 
     def __init__(self, runtimes: DataAdapter):
-        super().__init__()
+        super().__init__(execution_wrapper=None)
         self.runtimes = runtimes
 
     def submit(self, job: Job):
