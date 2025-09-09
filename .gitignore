@@ -426,5 +426,5 @@ build/*
 solvers/*/*/*/
 
 # databases
-#data/sustainablecompetition.db
+data/sustainablecompetition.db
 !data/dump.sql
