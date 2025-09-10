@@ -54,6 +54,13 @@ class AbstractExecutionWrapper(ABC):
         """
         pass
 
+    @abstractmethod
+    def parse_result(self, tool_output_path: str):
+        """
+        Parse the tool output and extract relevant information.
+        """
+        pass
+
 
 class RunSolverWrapper(AbstractExecutionWrapper):
     """
@@ -108,3 +115,38 @@ class RunSolverWrapper(AbstractExecutionWrapper):
         Return the command line arguments for runsolver, excluding the binary path.
         """
         return self.cmd[1:]
+
+    def parse_result(self, tool_output_path: str):
+        """
+        Parse the runsolver log output to extract runtime statistics.
+        Parameters:
+        - tool_output: Path to the runsolver log output file.
+        Returns:
+        A dictionary with keys 'walltime', 'cputime', 'memory', 'timeout', 'memout', and 'exitstatus'.
+        """
+        result = {
+            "walltime": None,
+            "cputime": None,
+            "memory": None,
+            "timeout": False,
+            "memout": False,
+            "exitstatus": None,
+        }
+
+        with open(tool_output_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("WCTIME="):
+                    result["walltime"] = float(line.split("=", 1)[1].strip())
+                elif line.startswith("CPUTIME="):
+                    result["cputime"] = float(line.split("=", 1)[1].strip())
+                elif line.startswith("MAXRSS="):
+                    result["memory"] = int(line.split("=", 1)[1].strip())
+                elif line.startswith("TIMEOUT="):
+                    result["timeout"] = line.split("=", 1)[1].strip().lower() == "true"
+                elif line.startswith("MEMOUT="):
+                    result["memout"] = line.split("=", 1)[1].strip().lower() == "true"
+                elif line.startswith("EXITSTATUS="):
+                    result["exitstatus"] = int(line.split("=", 1)[1].strip())
+
+        return result
