@@ -12,10 +12,10 @@
    ```
 3. The database will be automatically restored from the dump.
 
-## Developer
-#### Make changes to your_database.db
-sqlite3 your_database.db "CREATE TABLE test (id INTEGER);"
+## random remarks
 
-#### Stage and commit
-git add sustainablecompetition.db
-git commit -m "Update database"
+you can fetch the path of the database with :
+
+````
+db_path = importlib.resources.files("sustainablecompetition.data").joinpath("sustainablecompetition.db")
+```
