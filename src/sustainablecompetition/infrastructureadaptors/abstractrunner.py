@@ -1,11 +1,14 @@
 """
-Adapter to execution environment (cluster, SLURM, K8s, cloud API, vendor queue).
+Adaptor to execution environment (cluster, SLURM, K8s, cloud API, vendor queue).
 """
 
 from abc import ABC, abstractmethod
 import time
 
+from sustainablecompetition.benchmarkadaptors.abstractinstance import AbstractInstanceAdaptor
+from sustainablecompetition.solveradaptors.abstractsolver import AbstractSolverAdaptor
 from sustainablecompetition.benchmarkatoms import Job, JobState, Result
+from sustainablecompetition.infrastructureadaptors.executionwrapper import AbstractExecutionWrapper
 
 
 __all__ = ["AbstractRunner"]
@@ -16,8 +19,13 @@ FINISHED_STATES = {JobState.CANCELLED, JobState.FAILED, JobState.FINISHED}
 class AbstractRunner(ABC):
     """Interface for Runners"""
 
-    def __init__(self):
+    def __init__(
+        self, solver_adaptor: AbstractSolverAdaptor = None, instance_adaptor: AbstractInstanceAdaptor = None, execution_wrapper: AbstractExecutionWrapper = None
+    ):
         self.jobs = list[Job]()
+        self.execution_wrapper = execution_wrapper
+        self.instance_adaptor = instance_adaptor
+        self.solver_adaptor = solver_adaptor
 
     @abstractmethod
     def submit(self, job: Job):
