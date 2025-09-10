@@ -79,9 +79,7 @@ class CompetitionDataAdaptor(DataAdaptor):
             database_path (str): the path of the sustainable competition database to allow for meta data retrieval
         """
         # Melt the DataFrame to long format
-        df_long = self.data.unpivot(
-            index="inst_hash", variable_name="solver_name", value_name="perf"
-        )
+        df_long = self.data.unpivot(index="inst_hash", variable_name="solver_name", value_name="perf")
 
         # Connect to database
         if database_path and source_name:
@@ -94,7 +92,9 @@ class CompetitionDataAdaptor(DataAdaptor):
         # Map solver_name to solver_hash
         if db_adaptor:
             df_long = df_long.with_columns(
-                pl.col("solver_name").map_elements(lambda name: db_adaptor.get_competition_solver_hash(source_name, name), return_dtype=pl.String).alias("solver_hash")
+                pl.col("solver_name")
+                .map_elements(lambda name: db_adaptor.get_competition_solver_hash(source_name, name), return_dtype=pl.String)
+                .alias("solver_hash")
             )
         else:
             df_long = df_long.with_columns(
@@ -104,8 +104,8 @@ class CompetitionDataAdaptor(DataAdaptor):
         # Set env_hash
         if env_hash is None:
             env_hash = "unknown_env"
-        df_long=df_long.with_columns(env_hash=pl.lit(env_hash))
-        
+        df_long = df_long.with_columns(env_hash=pl.lit(env_hash))
+
         # Determine status
         df_long = df_long.with_columns(pl.when(pl.col("perf") == 10000).then(pl.lit("TIMEOUT")).otherwise(pl.lit("COMPLETE")).alias("status"))
 
@@ -126,8 +126,7 @@ class CompetitionDataAdaptor(DataAdaptor):
             # Merge with solvers on solver_hash
             self.data = self.data.join(self.solvers, left_on="solver_hash", right_on="solver_hash", how="left")
         else:
-            self.data=self.perfs
-        
+            self.data = self.perfs
 
     def get_performances(self, benchmark_id: Optional[str] = None, solver_id: Optional[str] = None, hardware_id: Optional[str] = None) -> pl.DataFrame:
         """

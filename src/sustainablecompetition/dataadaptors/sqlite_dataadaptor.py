@@ -72,7 +72,7 @@ class SqlDataAdaptor(DataAdaptor):
                 query += " WHERE " + " AND ".join(conditions)
 
             # Execute the query with parameters
-            df = pl.read_database(query, conn, execute_options={"parameters":params})
+            df = pl.read_database(query, conn, execute_options={"parameters": params})
             return df
         finally:
             conn.close()
@@ -154,7 +154,7 @@ class SqlDataAdaptor(DataAdaptor):
                 FROM environments
                 WHERE env_hash IN (?{})
             """.format(",?" * (len(env_ids) - 1))  # Parameterize for all env_ids
-            return pl.read_database(query, conn, execute_options={"parameters":env_ids})
+            return pl.read_database(query, conn, execute_options={"parameters": env_ids})
         finally:
             conn.close()
 
@@ -175,7 +175,7 @@ class SqlDataAdaptor(DataAdaptor):
                 FROM instances
                 WHERE inst_hash IN (?{})
             """.format(",?" * (len(inst_ids) - 1))  # Parameterize for all inst_ids
-            return pl.read_database(query, conn, execute_options={"parameters":inst_ids})
+            return pl.read_database(query, conn, execute_options={"parameters": inst_ids})
         finally:
             conn.close()
 
@@ -196,6 +196,6 @@ class SqlDataAdaptor(DataAdaptor):
                 FROM solvers
                 WHERE solver_hash IN (?{})
             """.format(",?" * (len(solver_ids) - 1))  # Parameterize for all solver_ids
-            return pl.read_database(query, conn, execute_options={"parameters":solver_ids})
+            return pl.read_database(query, conn, execute_options={"parameters": solver_ids})
         finally:
             conn.close()
