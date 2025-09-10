@@ -12,7 +12,7 @@ class CsvDataAdaptor(DataAdaptor):
     Implement the data adaptor for csv data.
     """
 
-    def __init__(self, environments_path, instances_path, solvers_path, performances_path):
+    def __init__(self, environments_path: str, instances_path: str, solvers_path: str, performances_path: str):
         """
         Reads the csv files, loads the data into memory, and prepares it
         csv files are similar in structure to the sustainable competition database

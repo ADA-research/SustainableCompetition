@@ -38,11 +38,8 @@ class ParslRunner(AbstractRunner):
         """
         Run the solver with the given input and output files.
         """
-        wrapper_bin = inputs[0]
-        solver_bin = inputs[1]
-        instance_file = inputs[2]
-        tool_output = outputs[0]
-        solver_output = outputs[1]
+        wrapper_bin, solver_bin, instance_file = inputs
+        tool_output, solver_output, system_output = outputs
 
         wrapper.set_outputs(tool_output.filepath, solver_output.filepath)
         wrapper_args = " ".join(wrapper.get_command_args())
@@ -58,7 +55,15 @@ class ParslRunner(AbstractRunner):
         # ensure executable flags are set, since files may be fetched via HTTP etc.:
         chmod +x "{wrapper_bin.filepath}" 
         chmod +x "{solver_bin.filepath}"
+        
+        # log system information
+        uname -a > "{system_output.filepath}"
+        lscpu >> "{system_output.filepath}"
+        free -h >> "{system_output.filepath}"
+        df -h >> "{system_output.filepath}"
+        "{wrapper_bin.filepath}" --version >> "{system_output.filepath}" || true
 
+        # run the solver
         "{wrapper_bin.filepath}" {wrapper_args} "{solver_bin.filepath}" "{instance_file.filepath}"
         """
 
@@ -72,10 +77,13 @@ class ParslRunner(AbstractRunner):
         wrapper_bin = File(self.execution_wrapper.get_binary_path())
         solver_bin = File(self.solver_adaptor.get_path(job.solver_id))
         instance_file = File(self.instance_adaptor.get_path(job.benchmark_id))
-        inputs = [wrapper_bin, solver_bin, instance_file]
         output_root = f"{self.logsdir}/{job.solver_id}/{job.benchmark_id}"
         self.execution_wrapper.set_resource_limits(cputimelimit=job.timelimit, memorylimit=job.memlimit)
-        runsolver_future = self.runsolver(self.execution_wrapper, inputs=inputs, outputs=[f"{output_root}.log", f"{output_root}.out"])
+        runsolver_future = self.runsolver(
+            self.execution_wrapper,
+            inputs=[wrapper_bin, solver_bin, instance_file],
+            outputs=[f"{output_root}.log", f"{output_root}.out", f"{output_root}.system"],
+        )
         self.futures.append(runsolver_future)
         job.external_id = len(self.futures) - 1
 
@@ -87,10 +95,17 @@ class ParslRunner(AbstractRunner):
         job_future = self.futures[extid]
         if not job_future.done():
             return None
-        # TODO: parse result files for runtime, result, status, etc.
-        runtime = 0  # placeholder
+
+        output_root = f"{self.logsdir}/{job.solver_id}/{job.benchmark_id}"
+        tool_output, solver_output, system_output = [f"{output_root}.log", f"{output_root}.out", f"{output_root}.system"]
+
+        resource_usage = self.execution_wrapper.parse_result(tool_output)
+        solver_result = self.solver_adaptor.parse_result(solver_output)
+        with open(system_output, "r") as f:
+            system_result = f.read()
+
         job.set_finished()
-        return Result(job, runtime, 0)
+        return Result(job, resource_usage["cputime"], resource_usage["memory"])
 
     def cancel(self, job):
         return super().cancel(job)

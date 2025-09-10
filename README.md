@@ -1,16 +1,29 @@
 # SustainableCompetition
+
 ## Project Setup
 
 1. Clone the repository:
-   ```
-   git clone sustainablecompetition_url
+
+   ```bash
+   git clone https://github.com/ADA-research/SustainableCompetition.git
    cd sustainablecompetition
    ```
-2. Run the setup script to configure Git filters and restore the database:
+
+2. Install ``sqlite3`` on your system, chances are it is already installed, you can check if it is installed with:
+
+   ```bash
+   sqlite3 --version
    ```
+
+   We recommend installing it with your favourite package manager otherwise.
+
+3. Run the setup script to configure git filters and restore the database:
+
+   ```bash
    ./setup.sh
    ```
-3. The database will be automatically restored from the dump.
+
+4. The database will be automatically restored from the dump.
 
 ## random remarks
 
