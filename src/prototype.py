@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import asyncio
 import logging
 
 import argparse
@@ -8,15 +9,15 @@ import sys
 import polars as pl
 
 from sustainablecompetition.controller import Controller
-from sustainablecompetition.infrastructureadapters.virtual_runner import VirtualRunner
+from sustainablecompetition.infrastructureadaptors.virtual_runner import VirtualRunner
 from sustainablecompetition.benchmarkingmethods.trivial_benchmarker import TrivialBenchmarker
-from sustainablecompetition.resultconsumers.echo_consumer import EchoConsumer
-from sustainablecompetition.dataadapters.competition_dataadapter import CompetitionDataAdapter
+from sustainablecompetition.resultconsumers.lambda_consumer import LambdaConsumer
+from sustainablecompetition.dataadaptors.competition_dataadaptor import CompetitionDataAdaptor
 
 logger = logging.getLogger(__name__)
 
 
-def main():
+async def main():
     """
     Integration test using the trivial benchmarker (which submits all the instances)
     and the virtual runner (which returns the data from a csv file).
@@ -30,14 +31,14 @@ def main():
         sys.exit(1)
 
     df = pl.read_csv(args.file)
-    runner = VirtualRunner(CompetitionDataAdapter(df))
+    runner = VirtualRunner(CompetitionDataAdaptor(df))
     benchmarks = df.select("hash").to_series().to_list()
     columns = df.columns
     method = TrivialBenchmarker(benchmarks, columns[1])
-    consumer = EchoConsumer()
+    consumer = LambdaConsumer(print)
     controller = Controller(method, runner, njobs=1, consumers=[consumer])
-    controller.run()
+    await controller.run()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
