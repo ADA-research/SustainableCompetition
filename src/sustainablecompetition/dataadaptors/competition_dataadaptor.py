@@ -82,8 +82,8 @@ class CompetitionDataAdaptor(DataAdaptor):
         # - get_competition_env_hash and get_solver are defined elsewhere
 
         # Melt the DataFrame to long format
-        df_long = self.data.melt(
-            id_vars=["inst_hash"], value_vars=[col for col in self.data.columns if col != "inst_hash"], var_name="solver_name", value_name="perf"
+        df_long = self.data.unpivot(
+            index=["inst_hash"], on=[col for col in self.data.columns if col != "inst_hash"], variable_name="solver_name", value_name="perf"
         )
 
         # Connect to database
