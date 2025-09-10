@@ -1,5 +1,5 @@
 """
-PARSL Runner Adapter
+PARSL Runner Adaptor
 """
 
 import os
@@ -11,11 +11,11 @@ from parsl.configs.local_threads import config
 from parsl.data_provider.files import File
 
 
-from sustainablecompetition.benchmarkadapters.abstractinstance import AbstractInstanceAdapter
-from sustainablecompetition.infrastructureadapters.abstractrunner import AbstractRunner
+from sustainablecompetition.benchmarkadaptors.abstractinstance import AbstractInstanceAdaptor
+from sustainablecompetition.infrastructureadaptors.abstractrunner import AbstractRunner
 from sustainablecompetition.benchmarkatoms import Job, Result
-from sustainablecompetition.infrastructureadapters.executionwrapper import AbstractExecutionWrapper
-from sustainablecompetition.solveradapters.abstractsolver import AbstractSolverAdapter
+from sustainablecompetition.infrastructureadaptors.executionwrapper import AbstractExecutionWrapper
+from sustainablecompetition.solveradaptors.abstractsolver import AbstractSolverAdaptor
 
 
 class ParslRunner(AbstractRunner):
@@ -24,9 +24,9 @@ class ParslRunner(AbstractRunner):
     """
 
     def __init__(
-        self, rootdir: str, solver_adapter: AbstractSolverAdapter, instance_adapter: AbstractInstanceAdapter, execution_wrapper: AbstractExecutionWrapper
+        self, rootdir: str, solver_adaptor: AbstractSolverAdaptor, instance_adaptor: AbstractInstanceAdaptor, execution_wrapper: AbstractExecutionWrapper
     ):
-        super().__init__(solver_adapter=solver_adapter, instance_adapter=instance_adapter, execution_wrapper=execution_wrapper)
+        super().__init__(solver_adaptor=solver_adaptor, instance_adaptor=instance_adaptor, execution_wrapper=execution_wrapper)
         parsl.load(config)
         self.futures = []
         self.rootdir = rootdir
@@ -70,8 +70,8 @@ class ParslRunner(AbstractRunner):
         super().submit(job)  # this marks the job as submitted
         job.mark_running()  # mark as running immediately upon submission is a workaround. TODO: introduce proper monitoring of parsl jobs
         wrapper_bin = File(self.execution_wrapper.get_binary_path())
-        solver_bin = File(self.solver_adapter.get_path(job.solver_id))
-        instance_file = File(self.instance_adapter.get_path(job.benchmark_id))
+        solver_bin = File(self.solver_adaptor.get_path(job.solver_id))
+        instance_file = File(self.instance_adaptor.get_path(job.benchmark_id))
         inputs = [wrapper_bin, solver_bin, instance_file]
         output_root = f"{self.logsdir}/{job.solver_id}/{job.benchmark_id}"
         self.execution_wrapper.set_resource_limits(cputimelimit=job.timelimit, memorylimit=job.memlimit)
