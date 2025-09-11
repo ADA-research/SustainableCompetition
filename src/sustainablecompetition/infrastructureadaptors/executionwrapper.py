@@ -85,7 +85,7 @@ class RunSolverWrapper(AbstractExecutionWrapper):
         if cputimelimit is not None:
             self.cmd += ["--cpu-limit", str(cputimelimit)]
 
-    def set_outputs(self, tooloutput: str, solveroutput: str, headlimit: int = 10, taillimit: int = 10):
+    def set_outputs(self, tooloutput: str, solveroutput: str, headlimit: int = 10, taillimit: int = 20):
         """
         Set the output file for the solver's output.
         Parameters:
@@ -96,7 +96,7 @@ class RunSolverWrapper(AbstractExecutionWrapper):
         """
         self.cmd += ["--var", tooloutput]
         self.cmd += ["--solver-data", solveroutput]
-        self.cmd += ["--output-limit", str(headlimit), str(taillimit)]
+        self.cmd += ["--output-limit", ",".join([str(headlimit), str(taillimit)])]
 
     def get_command(self) -> List[str]:
         """

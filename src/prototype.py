@@ -9,6 +9,7 @@ import sys
 import polars as pl
 
 from sustainablecompetition.controller import Controller
+from sustainablecompetition.infrastructureadaptors.parsl_configs import make_local_processes, make_local_threads
 from sustainablecompetition.infrastructureadaptors.virtual_runner import VirtualRunner
 from sustainablecompetition.infrastructureadaptors.parsl_runner import ParslRunner
 from sustainablecompetition.benchmarkingmethods.trivial_benchmarker import TrivialBenchmarker
@@ -66,11 +67,12 @@ async def parsl_integration_test():
         solver_adaptor=solver_adaptor,
         instance_adaptor=SATInstanceAdaptor("."),
         execution_wrapper=RunSolverWrapper("."),
+        parsl_config=make_local_threads(4),
     )
     benchmarks = df.select("hash").to_series().to_list()
     method = TrivialBenchmarker(benchmarks, "kissat")
     consumer = LambdaConsumer(print)
-    controller = Controller(method, runner, njobs=1, consumers=[consumer])
+    controller = Controller(method, runner, njobs=10, consumers=[consumer])
     await controller.run()
 
 

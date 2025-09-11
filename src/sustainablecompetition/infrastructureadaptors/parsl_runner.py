@@ -6,7 +6,8 @@ import os
 
 import parsl
 from parsl.app.app import bash_app
-from parsl.configs.local_threads import config
+from parsl.configs.local_threads import config as default_config
+from parsl.config import Config
 
 from parsl.data_provider.files import File
 
@@ -36,6 +37,7 @@ def runsolver(wrapper: AbstractExecutionWrapper, inputs, outputs):
     # create output directories if they do not exist
     mkdir -p $(dirname "{tool_output.filename}")
     mkdir -p $(dirname "{solver_output.filename}")
+    mkdir -p $(dirname "{system_output.filename}")
 
     # ensure executable flags are set, since files may be fetched via HTTP etc.:
     chmod +x "{wrapper_bin.filepath}" 
@@ -46,7 +48,7 @@ def runsolver(wrapper: AbstractExecutionWrapper, inputs, outputs):
     lscpu >> "{system_output.filepath}"
     free -h >> "{system_output.filepath}"
     df -h >> "{system_output.filepath}"
-    "{wrapper_bin.filepath}" --version >> "{system_output.filepath}" || true
+    "{wrapper_bin.filepath}" --version >> "{system_output.filepath}"
 
     # run the solver
     "{wrapper_bin.filepath}" {wrapper_args} "{solver_bin.filepath}" "{instance_file.filepath}"
@@ -59,10 +61,15 @@ class ParslRunner(AbstractRunner):
     """
 
     def __init__(
-        self, rootdir: str, solver_adaptor: AbstractSolverAdaptor, instance_adaptor: AbstractInstanceAdaptor, execution_wrapper: AbstractExecutionWrapper
+        self,
+        rootdir: str,
+        solver_adaptor: AbstractSolverAdaptor,
+        instance_adaptor: AbstractInstanceAdaptor,
+        execution_wrapper: AbstractExecutionWrapper,
+        parsl_config: Config = default_config,
     ):
         super().__init__(solver_adaptor=solver_adaptor, instance_adaptor=instance_adaptor, execution_wrapper=execution_wrapper)
-        parsl.load(config)
+        parsl.load(parsl_config)
         self.futures = []
         self.rootdir = rootdir
         self.logsdir = f"{self.rootdir}/logs"
@@ -84,6 +91,7 @@ class ParslRunner(AbstractRunner):
         tool_output = File(f"{output_root}.log")
         solver_output = File(f"{output_root}.out")
         system_output = File(f"{output_root}.system")
+        os.makedirs(os.path.dirname(output_root), exist_ok=True)
         # set execution wrapper resource limits
         self.execution_wrapper.set_resource_limits(cputimelimit=job.timelimit, memorylimit=job.memlimit)
         runsolver_future = runsolver(
@@ -104,6 +112,7 @@ class ParslRunner(AbstractRunner):
             return None
 
         if job_future.exception() is not None:
+            print(f"Job {job.solver_id} on {job.benchmark_id} failed with exception: {job_future.exception()}")
             raise job_future.exception()
 
         output_root = f"{self.logsdir}/{job.solver_id}/{job.benchmark_id}"
