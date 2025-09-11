@@ -18,6 +18,8 @@ class SATInstanceAdaptor(AbstractInstanceAdaptor):
 
     # Maps instance ids to instance paths
     registry = {}
+    path = "instances/sat/"
+    data = "instances/cnf_data.db"
 
     def __init__(self, local_folder: Optional[str] = None, timeout: tuple[float, float] = (5, 300)):
         """
@@ -54,4 +56,5 @@ class SATInstanceAdaptor(AbstractInstanceAdaptor):
         instance_path = os.path.join(self.local_folder, filename)
         with open(instance_path, "wb") as f:
             f.write(response.content)
+        self.registry[instance_id] = instance_path
         return instance_path
