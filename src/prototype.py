@@ -16,6 +16,7 @@ from sustainablecompetition.infrastructureadaptors.parsl_configs import make_loc
 from sustainablecompetition.infrastructureadaptors.virtual_runner import VirtualRunner
 from sustainablecompetition.infrastructureadaptors.parsl_runner import ParslRunner
 from sustainablecompetition.benchmarkingmethods.trivial_benchmarker import TrivialBenchmarker
+from sustainablecompetition.resultconsumers.csv_consumer import CSVConsumer
 from sustainablecompetition.resultconsumers.lambda_consumer import LambdaConsumer
 from sustainablecompetition.dataadaptors.competition_dataadaptor import CompetitionDataAdaptor
 from sustainablecompetition.infrastructureadaptors.executionwrapper import RunSolverWrapper
@@ -58,8 +59,8 @@ def parsl_integration_test(benchmarks):
         parsl_config=make_local_processes(3),
     )
     method = TrivialBenchmarker(benchmarks, "kissat")
-    # TODO: Also print result to CSV
     method.register_consumer(LambdaConsumer(print))
+    method.register_consumer(CSVConsumer("kissat_test_results.csv"))
     method.run(runner, njobs=10)
 
 
