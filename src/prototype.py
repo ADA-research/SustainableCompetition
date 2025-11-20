@@ -82,13 +82,13 @@ def parsl_local_integration_test(benchmarks):
         method.register_consumer(CSVConsumer("slurm_test_results.csv"))
         method.run(runner, njobs=10)
 
-def parsl_slurm_integration_test(benchmarks):
+def parsl_slurm_integration_test(benchmarks, machine: str):
     """Integration test using the parsl slurm runner."""
     solver_adaptor = SolverAdaptor()
     solver_adaptor.read_registry("./examples/solverAdaptors/sat/solvers1.csv")
     instance_adaptor = SATInstanceAdaptor("./instances/sat/", "./instances/cnf_data.db")
     config = make_slurm_config(
-        partition="liskov",
+        partition=machine,
         account=None,  # your account name or None to skip
         jobname="test_benchmark_job",
     )
@@ -125,4 +125,4 @@ if __name__ == "__main__":
         parsl_local_integration_test(benchmarks=short_easybatch)
     elif args.command == "slurm":
         print("Running parsl slurm integration test...")
-        parsl_slurm_integration_test(benchmarks=long_easybatch)
+        parsl_slurm_integration_test(benchmarks=long_easybatch, machine=args.machine)
