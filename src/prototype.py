@@ -85,6 +85,7 @@ def parsl_local_integration_test(benchmarks):
         method.register_consumer(CSVConsumer("slurm_test_results.csv"))
         method.run(runner, njobs=10)
 
+
 def parsl_slurm_integration_test(benchmarks, machine: str, account: str | None = None, tasks_per_node: int = 32, jobname: str = "benchmark_job"):
     """Integration test using the parsl slurm runner."""
     solver_adaptor = SolverAdaptor()
@@ -94,7 +95,7 @@ def parsl_slurm_integration_test(benchmarks, machine: str, account: str | None =
         partition=machine,
         account=account,  # your account name or None to skip
         jobname=jobname,
-        tasks_per_node=tasks_per_node
+        tasks_per_node=tasks_per_node,
     )
     runner = create_parsl_runner(solver_adaptor, instance_adaptor, config)
     for sid in solver_adaptor.get_ids():
@@ -118,7 +119,7 @@ if __name__ == "__main__":
     parser_slurm.add_argument("--account", help="Account name for SLURM", default=None)
     parser_slurm.add_argument("--tasks-per-node", type=int, help="Number of tasks per node", default=32)
     parser_slurm.add_argument("--jobname", help="Job name for SLURM", default="benchmark_job")
-    
+
     args = parser.parse_args()
 
     if args.command == "virtual":
@@ -132,4 +133,6 @@ if __name__ == "__main__":
         parsl_local_integration_test(benchmarks=short_easybatch)
     elif args.command == "slurm":
         print("Running parsl slurm integration test...")
-        parsl_slurm_integration_test(benchmarks=long_easybatch, machine=args.machine, account=args.account, tasks_per_node=args.tasks_per_node, jobname=args.jobname)
+        parsl_slurm_integration_test(
+            benchmarks=long_easybatch, machine=args.machine, account=args.account, tasks_per_node=args.tasks_per_node, jobname=args.jobname
+        )

@@ -201,7 +201,7 @@ class SqlDataAdaptor(DataAdaptor):
             return pl.read_database(query, conn, execute_options={"parameters": solver_hashs})
         finally:
             conn.close()
-            
+
     def get_all_instance_ids(self) -> list[str]:
         """
         Returns a list of all instance IDs in the database.
@@ -218,7 +218,7 @@ class SqlDataAdaptor(DataAdaptor):
             return [row[0] for row in results]
         finally:
             conn.close()
-            
+
     def get_all_solver_ids(self) -> list[str]:
         """
         Returns a list of all solver IDs in the database.
