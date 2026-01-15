@@ -71,6 +71,8 @@ def runsolver(serialized_wrapper: dict, serialized_solver: dict, serialized_chec
         echo "s UNSATISFIABLE"
         {proof_checker_cmd}
     fi
+    
+    rm -f "{cnf}" "{cert_out}"
     """
 
 

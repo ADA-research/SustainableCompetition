@@ -93,6 +93,7 @@ class CheckerAdaptor(AbstractExecutable):
             """
             grep "^v" $CERT | sed -re 's/^v//g' > $CERT.model
             $BIN0 sat $INST $CERT.model 1> $CHECKEROUT 2>&1
+            rm -f $CERT.model
             """,
             None,
         )
