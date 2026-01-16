@@ -44,6 +44,9 @@ def runsolver(
     for f in solver_wrapper_binaries + solver_binaries + checker_binaries + checker_wrapper_binaries + satchecker_binaries:
         os.chmod(f.filepath, 0o755)
         
+    for f in outputs:
+        open(f.filepath, 'w').close()
+        
     solver_wrapper_binaries_paths = [f.filepath for f in solver_wrapper_binaries]
     checker_wrapper_binaries_paths = [f.filepath for f in checker_wrapper_binaries]
     solver_binaries_paths = [f.filepath for f in solver_binaries]
