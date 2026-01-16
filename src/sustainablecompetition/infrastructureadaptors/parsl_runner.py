@@ -40,7 +40,7 @@ def runsolver(
     # ensure executable flags are set, since files may be fetched via HTTP etc.:
     for f in wrapper_binaries + solver_binaries + checker_binaries + satchecker_binaries:
         os.chmod(f.filepath, 0o755)
-        
+
     out, err, wrapper_out, solver_out, model_out, trimmer_out, checker_out = outputs
     cnf = f"{benchmark_instance.filepath}.unpacked.cnf"
     cert_out = f"{solver_out.filepath}.cert"
@@ -51,9 +51,7 @@ def runsolver(
 
     solve_cmd = solver.format_command(solver_id, solver_binaries, cnf, cert_out)
     wrapper_cmd = wrapper.format_command(wrapper_id, wrapper_binaries, solve_cmd, wrapper_out.filepath, solver_out.filepath)
-    proof_checker_cmd = checker.format_command(
-        checker_id, checker_binaries, cnf, cert_out, trimmer_out.filepath, checker_out.filepath
-    )
+    proof_checker_cmd = checker.format_command(checker_id, checker_binaries, cnf, cert_out, trimmer_out.filepath, checker_out.filepath)
     model_checker_cmd = checker.format_command("satchecker", satchecker_binaries, cnf, solver_out.filepath, "", checker_out.filepath)
 
     return f"""
@@ -129,20 +127,20 @@ class ParslRunner(AbstractRunner):
 
         # set execution wrapper resource limits
         self.execution_wrapper.set_resource_limits(cputimelimit=job.timelimit, memorylimit=job.memlimit)
-        
+
         runsolver_future = runsolver(
-            wrapper_id = "runsolver",
-            wrapper_serialized = self.execution_wrapper.to_dict(),
-            wrapper_binaries = [ File(f) for f in self.execution_wrapper.get_binaries("runsolver") ],
-            solver_id = job.solver_id,
-            solver_serialized = self.solver_adaptor.to_dict(),
-            solver_binaries = [ File(f) for f in self.solver_adaptor.get_binaries(job.solver_id) ],
-            checker_id = job.checker_id,
-            checker_serialized = self.checker_adaptor.to_dict(),
-            checker_binaries = [ File(f) for f in self.checker_adaptor.get_binaries(job.checker_id) ],
-            satchecker_binaries = [ File(f) for f in self.checker_adaptor.get_binaries("satchecker") ],
-            benchmark_instance = File(self.instance_adaptor.get_path(job.benchmark_id)),
-            outputs = [ File(output_root + ext) for ext in [".out", ".err", ".wrapper", ".solver", ".model", ".trimmer", ".checker"] ],
+            wrapper_id="runsolver",
+            wrapper_serialized=self.execution_wrapper.to_dict(),
+            wrapper_binaries=[File(f) for f in self.execution_wrapper.get_binaries("runsolver")],
+            solver_id=job.solver_id,
+            solver_serialized=self.solver_adaptor.to_dict(),
+            solver_binaries=[File(f) for f in self.solver_adaptor.get_binaries(job.solver_id)],
+            checker_id=job.checker_id,
+            checker_serialized=self.checker_adaptor.to_dict(),
+            checker_binaries=[File(f) for f in self.checker_adaptor.get_binaries(job.checker_id)],
+            satchecker_binaries=[File(f) for f in self.checker_adaptor.get_binaries("satchecker")],
+            benchmark_instance=File(self.instance_adaptor.get_path(job.benchmark_id)),
+            outputs=[File(output_root + ext) for ext in [".out", ".err", ".wrapper", ".solver", ".model", ".trimmer", ".checker"]],
         )
         self.futures.append(runsolver_future)
         job.external_id = len(self.futures) - 1

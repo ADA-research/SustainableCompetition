@@ -14,7 +14,7 @@ class ExecutionWrapper(AbstractExecutable):
     A class to manage execution wrappers.
     """
 
-    def __init__(self, mem=64 * 1024, cputime=3600, walltime=3700, serialized: dict = None):
+    def __init__(self, mem=64 * 1024, cputime=3600, walltime=7200, serialized: dict = None):
         """Initialize the ExecutionWrapper with resource limits and registry, or from a serialized dictionary if provided."""
         super().__init__(serialized)
         if "runsolver" not in self.registry:
@@ -26,9 +26,9 @@ class ExecutionWrapper(AbstractExecutable):
             )
         self.memorylimit = serialized.get("memorylimit", 64 * 1024) if serialized else mem
         self.cputimelimit = serialized.get("cputimelimit", 3600) if serialized else cputime
-        self.walltimelimit = serialized.get("walltimelimit", 3700) if serialized else walltime
+        self.walltimelimit = serialized.get("walltimelimit", 7200) if serialized else walltime
         if self.walltimelimit < self.cputimelimit:
-            self.walltimelimit = self.cputimelimit + 100  # ensure walltime is always larger than cputime
+            self.walltimelimit = self.cputimelimit * 2  # ensure walltime is always larger than cputime
 
     def to_dict(self) -> dict:
         """Convert the execution wrapper to a dictionary representation."""

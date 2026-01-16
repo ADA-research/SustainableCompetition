@@ -31,7 +31,7 @@ class AbstractExecutable(ABC):
     def get_binaries(self, xid: str) -> list[str]:
         """Return the binary paths for a given executables ID."""
         return self.registry[xid][0]
-    
+
     def get_format_string(self, xid: str) -> str:
         """Return the format string for a given executable ID."""
         return self.registry[xid][1]
@@ -45,14 +45,14 @@ class AbstractExecutable(ABC):
         result = self._format_base(xid, binaries)
         result = self._format_extra(result, *args, **kwargs)
         return result
-        
+
     def _format_base(self, xid: str, binaries: list[str]) -> str:
         """Return the base command line for the executable."""
         result = self.get_format_string(xid)
         for i, bin_path in enumerate(binaries):
             result = result.replace(f"$BIN{i}", bin_path)
         return result
-    
+
     def _format_extra(self, base, *args, **kwargs) -> str:
         """Return the extra command line parts for the executable."""
         return base

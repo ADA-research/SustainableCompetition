@@ -102,10 +102,7 @@ class CheckerAdaptor(AbstractExecutable):
     def _format_extra(self, base: str, instance: str, certificate: str, trimmer_output: str, checker_output: str) -> str:
         """Get the command line for a given checker ID, replacing placeholders."""
         return (
-            base.replace("$INST", instance)
-            .replace("$CERT", certificate)
-            .replace("$TRIMMER_OUTPUT", trimmer_output)
-            .replace("$CHECKER_OUTPUT", checker_output)
+            base.replace("$INST", instance).replace("$CERT", certificate).replace("$TRIMMER_OUTPUT", trimmer_output).replace("$CHECKER_OUTPUT", checker_output)
         )
 
     def parse_result(self, outfile: str):
