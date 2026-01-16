@@ -175,7 +175,7 @@ if __name__ == "__main__":
             if not os.path.isfile(args.bfile):
                 print(f"Error: File '{args.bfile}' does not exist.")
                 sys.exit(1)
-            df = pl.read_csv(args.file)
+            df = pl.read_csv(args.bfile)
             benchmarks = df.select("hash").to_series().to_list()
         else:  # fallback to default
             benchmarks = long_easybatch
