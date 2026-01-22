@@ -133,10 +133,17 @@ class Result:
     Contains a reference to the job and its resource usage.
     """
 
-    def __init__(self, job: Job, runtime=None, memory=None):
+    def __init__(self, job: Job, runtime=None, memory=None, failed: bool = False):
         self.job = job
         self.runtime = runtime
         self.memory = memory
+        self.failed = failed
+        
+    def has_failed(self) -> bool:
+        return self.failed
+    
+    def get_job(self) -> Job:
+        return self.job
 
     def __repr__(self):
         return f"BenchmarkResult(inst_id={self.job.benchmark_id}, solver_id={self.job.solver_id}, perf={self.runtime})"

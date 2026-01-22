@@ -63,6 +63,9 @@ class AbstractBenchmarker(ABC):
 
         # iterate over the results
         for result in runner.completions():
+            if result.is_failed():
+                runner.submit(result.get_job())  # resubmit failed job, TODO: max retries
+                continue
             self.handle_result(result)
             # submit the next job
             job = self.next_job()

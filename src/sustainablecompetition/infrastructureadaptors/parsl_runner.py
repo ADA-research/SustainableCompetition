@@ -171,7 +171,7 @@ class ParslRunner(AbstractRunner):
 
         if job_future.exception() is not None:
             print(f"Job {job.solver_id} on {job.benchmark_id} failed with exception: {job_future.exception()}")
-            raise job_future.exception()
+            return Result(job, failed=True)
 
         output_root = job.get_log_prefix()
         with open(f"{output_root}.done", "w") as f:
