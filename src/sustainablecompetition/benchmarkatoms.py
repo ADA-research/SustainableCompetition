@@ -138,10 +138,10 @@ class Result:
         self.runtime = runtime
         self.memory = memory
         self.failed = failed
-        
+
     def has_failed(self) -> bool:
         return self.failed
-    
+
     def get_job(self) -> Job:
         return self.job
 
