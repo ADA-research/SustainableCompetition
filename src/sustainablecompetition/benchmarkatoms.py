@@ -57,6 +57,13 @@ class Job:
         # set by worker when submitted to external system
         self.external_id: Optional[str] = None
 
+    def clone(self) -> "Job":
+        """
+        Create a clone of this job with identical benchmark_id, solver_id, checker_id, and logroot.
+        The cloned job will have a new created_at timestamp and will be in the CREATED state.
+        """
+        return Job(benchmark_id=self.benchmark_id, solver_id=self.solver_id, checker_id=self.checker_id, logroot=self.logroot)
+
     def get_log_prefix(self) -> str:
         """
         Get the logfile prefix for this job.
