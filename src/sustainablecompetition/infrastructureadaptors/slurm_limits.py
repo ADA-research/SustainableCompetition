@@ -95,7 +95,7 @@ def get_qos_limits(qos: str):
     return None, None
 
 
-def compute_max_blocks(safety_factor: float = 0.8, fallback: int = 1):
+def compute_max_blocks(safety_factor: float = 0.8, fallback: int = 100):
     """Determine safe maximum of submittable jobs as follows:
     max_blocks <= min(
         user running job limit,
@@ -130,7 +130,7 @@ def compute_max_blocks(safety_factor: float = 0.8, fallback: int = 1):
         candidates.append(max(qos_max_submit - current_jobs, 0))
 
     if not candidates:
-        return fallback
+        return max(fallback - current_jobs, 1)
 
     max_blocks = min(candidates)
 

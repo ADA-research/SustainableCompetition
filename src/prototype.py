@@ -119,7 +119,7 @@ def parsl_slurm_integration_test(
     instance_adaptor = SATInstanceAdaptor("./instances/sat/", "./instances/cnf_data.db")
     walltime_seconds = solver_walltime + checker_walltime + 600  # extra buffer
 
-    queue_max = slurm_limits.compute_max_blocks(safety_factor=0.8, fallback=10)
+    queue_max = slurm_limits.compute_max_blocks(safety_factor=0.8, fallback=100)
 
     config = make_slurm_config(
         partition=machine,
