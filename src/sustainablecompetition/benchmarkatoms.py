@@ -3,10 +3,10 @@
 import logging
 from enum import Enum
 from datetime import datetime, timezone
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from sustainablecompetition.benchmarkingmethods.abstract_benchmarker import AbstractBenchmarker
-
+if TYPE_CHECKING:
+    from sustainablecompetition.benchmarkingmethods.abstract_benchmarker import AbstractBenchmarker
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +39,16 @@ class Job:
       CREATED/SUBMITTED -> CANCELLED
     """
 
-    def __init__(self, job_producer: AbstractBenchmarker, benchmark_id: str, solver_id: str, checker_id: str, logroot: str, retries: int = 3) -> None:
-        self.job_producer: AbstractBenchmarker = job_producer
+    def __init__(
+        self,
+        job_producer: "AbstractBenchmarker",
+        benchmark_id: str,
+        solver_id: str,
+        checker_id: str,
+        logroot: str,
+        retries: int = 3,
+    ) -> None:
+        self.job_producer: "AbstractBenchmarker" = job_producer
         self.benchmark_id: str = benchmark_id
         self.solver_id: str = solver_id
         self.checker_id: str = checker_id
@@ -55,7 +63,7 @@ class Job:
 
         # state data
         self.state: JobState = JobState.CREATED
-        self.result: Optional[Result] = None
+        self.result: Optional["Result"] = None
         self.error: Optional[str] = None
 
         # set by worker when submitted to external system
@@ -152,7 +160,7 @@ class Result:
     Contains a reference to the job and its resource usage.
     """
 
-    def __init__(self, job: Job, runtime=None, memory=None, failed: bool = False):
+    def __init__(self, job: "Job", runtime=None, memory=None, failed: bool = False):
         self.job = job
         self.runtime = runtime
         self.memory = memory
@@ -161,7 +169,7 @@ class Result:
     def has_failed(self) -> bool:
         return self.failed
 
-    def get_job(self) -> Job:
+    def get_job(self) -> "Job":
         return self.job
 
     def __repr__(self):

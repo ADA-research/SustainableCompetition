@@ -9,9 +9,10 @@ from threading import Thread
 from queue import Queue
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-import sustainablecompetition.benchmarkatoms
+if TYPE_CHECKING:
+    from sustainablecompetition.benchmarkatoms import Job, Result
 
 __all__ = ["AbstractBenchmarker"]
 
@@ -50,7 +51,7 @@ class AbstractBenchmarker(ABC):
                 consumer.consume_result(result)
 
     @abstractmethod
-    def next_job(self) -> Optional[sustainablecompetition.benchmarkatoms.Job]:
+    def next_job(self) -> Optional["Job"]:
         """Return the next job to submit (can be None if there is nothing left to do)."""
         raise NotImplementedError
 
@@ -62,6 +63,6 @@ class AbstractBenchmarker(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def handle_result(self, result: sustainablecompetition.benchmarkatoms.Result) -> None:
+    def handle_result(self, result: "Result") -> None:
         """Called for each finished/failed job to update planning or process results."""
         raise NotImplementedError

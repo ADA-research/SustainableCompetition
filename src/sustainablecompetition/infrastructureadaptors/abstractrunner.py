@@ -5,7 +5,11 @@ Adaptor to execution environment (cluster, SLURM, K8s, cloud API, vendor queue).
 from abc import ABC, abstractmethod
 import time
 
-from sustainablecompetition.benchmarkingmethods.abstract_benchmarker import AbstractBenchmarker
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sustainablecompetition.benchmarkingmethods.abstract_benchmarker import AbstractBenchmarker
+
 from sustainablecompetition.benchmarkadaptors.abstractinstance import AbstractInstanceAdaptor
 from sustainablecompetition.solveradaptors.abstractexecutable import AbstractExecutable
 from sustainablecompetition.benchmarkatoms import Job, JobState, Result
@@ -24,7 +28,7 @@ class AbstractRunner(ABC):
         self.instance_adaptor = instance_adaptor
         self.solver_adaptor = solver_adaptor
 
-    def run(self, benchmarker: AbstractBenchmarker, njobs: int = 1):
+    def run(self, benchmarker: "AbstractBenchmarker", njobs: int = 1):
         """
         Maintains the benchmarking process and blocks until benchmarking is finished (i.e., all jobs are completed).
         Also blocks until all consumers are finished.
