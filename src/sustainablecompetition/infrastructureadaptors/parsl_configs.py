@@ -55,7 +55,7 @@ def make_slurm_config(
     worker_init: str = """# Load your environment here""",
 ) -> Config:
     """Create a Parsl config for SLURM-managed clusters."""
-    scheduler_opts = [f"#SBATCH --job-name={jobname}"]
+    scheduler_opts = [f"#SBATCH --job-name={jobname}", "#SBATCH --no-requeue"]
     if account:
         scheduler_opts.append(f"#SBATCH --account={account}")
     if mem_per_node:
