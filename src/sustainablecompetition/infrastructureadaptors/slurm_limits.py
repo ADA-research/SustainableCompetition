@@ -131,7 +131,7 @@ def compute_max_blocks(safety_factor: float = 0.8, fallback: int = 100):
     qos_max_jobs, qos_max_submit = (None, None)
     if qos:
         qos_max_jobs, qos_max_submit = get_qos_limits(qos)
-        
+
     group_max_jobs = get_group_limits(user)
 
     candidates = []
@@ -147,7 +147,7 @@ def compute_max_blocks(safety_factor: float = 0.8, fallback: int = 100):
 
     if qos_max_submit is not None:
         candidates.append(max(qos_max_submit - current_jobs, 0))
-    
+
     if group_max_jobs is not None:
         candidates.append(group_max_jobs)
 
