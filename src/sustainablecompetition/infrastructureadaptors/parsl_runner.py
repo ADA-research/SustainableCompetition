@@ -86,11 +86,11 @@ def runsolver(
     # stop eagerly on error
     set -e
     set -x  # enable debug output to see which commands are executed
-    
+
     # log system information
-    uname -a; echo; lscpu; echo; free -h; echo; df -h; echo
+    uname -a; echo; lscpu; echo; free -h; echo; df -h; echo; ps aux; echo;
     echo "{wrapper_cmd}"
-        
+
     case "{benchmark_instance.filepath}" in
         *.xz)              xzcat "{benchmark_instance.filepath}" ;;
         *.bz2)             bzcat "{benchmark_instance.filepath}" ;;
@@ -104,7 +104,7 @@ def runsolver(
 
     # run the solver
     {wrapper_cmd}
-    
+
     # run the proof/model checker based on the solver output
     if ( grep "s SATISFIABLE" {solver_out.filepath} > /dev/null ); then
         echo "s SATISFIABLE"
@@ -113,7 +113,7 @@ def runsolver(
         echo "s UNSATISFIABLE"
         {proof_checker_wrapper_cmd}
     fi
-    
+
     rm -f "{cnf}" "{cert_out}"
     """
 
