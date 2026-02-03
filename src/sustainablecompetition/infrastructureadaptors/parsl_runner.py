@@ -3,6 +3,8 @@ PARSL Runner Adaptor
 """
 
 import os
+from signal import signal
+import sys
 
 import parsl
 from parsl.app.app import bash_app
@@ -18,6 +20,51 @@ from sustainablecompetition.benchmarkatoms import Job, Result
 from sustainablecompetition.solveradaptors.checkeradaptor import CheckerAdaptor
 from sustainablecompetition.solveradaptors.executionwrapper import ExecutionWrapper
 from sustainablecompetition.solveradaptors.solveradaptor import SolverAdaptor
+
+
+def shutdown(signum, frame):
+    """
+    Signal handler for graceful shutdown when walltime is approaching.
+
+    Handles termination of all Parsl executors and cleanup of distributed execution
+    framework resources. Cancels all running provider jobs and closes ZMQ (ZeroMQ)
+    messaging queues used for inter-process communication between executors.
+
+    Args:
+        signum (int): Signal number received (e.g., SIGALRM, SIGTERM).
+        frame (FrameType): Current stack frame at time of signal.
+
+    Raises:
+        SystemExit: Always exits with code 0 after cleanup.
+
+    Note:
+        This function is typically registered as a signal handler to catch
+        timeout or termination signals during job execution.
+    """
+    print("Walltime approaching — shutting down HTEX workers")
+
+    dfk = parsl.dfk()
+
+    for executor in dfk.executors.values():
+        try:
+            executor.provider.cancel()
+        except Exception as e:
+            print(f"Failed to cancel provider jobs: {e}")
+
+    dfk.cleanup()  # shuts down executors + ZMQ
+    sys.exit(0)
+
+
+# Register signal handlers for graceful shutdown:
+# - SIGINT: Keyboard interrupt (Ctrl+C)
+# - SIGTERM: Termination request (e.g., kill command)
+# - SIGHUP: Terminal closed or parent process terminated
+# - SIGUSR1: User-defined signal 1 (custom timeout notification)
+#
+# In SLURM jobs, use `#SBATCH --signal=B:USR1@300` to send SIGUSR1
+# 300 seconds before walltime limit, allowing graceful shutdown before timeout.
+for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGUSR1):
+    signal.signal(sig, shutdown)
 
 
 @bash_app
@@ -137,7 +184,15 @@ class ParslRunner(AbstractRunner):
         self.futures = []
 
     def __del__(self):
-        parsl.dfk().cleanup()
+        dfk = parsl.dfk()
+
+        for executor in dfk.executors.values():
+            try:
+                executor.provider.cancel()
+            except Exception as e:
+                print(f"Failed to cancel provider jobs: {e}")
+
+        dfk.cleanup()
         parsl.clear()
 
     def submit(self, job: Job) -> bool:
