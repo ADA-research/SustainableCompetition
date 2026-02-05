@@ -162,6 +162,7 @@ class ParslRunner(AbstractRunner):
         self.solver_wrapper = solver_wrapper
         self.checker_wrapper = checker_wrapper
         parsl.load(parsl_config)
+        parsl.set_stream_logger()
         self.futures = []
 
     def __del__(self):
