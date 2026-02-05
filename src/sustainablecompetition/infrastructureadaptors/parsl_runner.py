@@ -3,7 +3,7 @@ PARSL Runner Adaptor
 """
 
 import os
-from signal import signal
+import signal
 import sys
 
 import parsl
