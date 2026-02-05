@@ -46,6 +46,7 @@ def run_slurm(
     checker_walltime: int = 70000,
     checker_memory: int = 64 * 1024,
     logroot: str = "./logs",
+    workerinit: str = "",
 ):
     """Run trivial benchmarking method on slurm cluster."""
     print(f"Benchmarking solvers in {solvers} using {len(benchmarks)} benchmarks")
@@ -63,6 +64,7 @@ def run_slurm(
         tasks_per_node=tasks_per_node,
         walltime_seconds=solver_walltime + checker_walltime,
         max_blocks=queue_max,
+        worker_init=workerinit,
     )
 
     methods = []
@@ -147,6 +149,7 @@ if __name__ == "__main__":
             checker_walltime=checker_walltime,
             checker_memory=checker_memory,
             logroot=results,
+            workerinit=scheduling.get("workerinit", ""),
         )
     else:
         print(f"Error: Unsupported scheduler '{scheduler}'.")
