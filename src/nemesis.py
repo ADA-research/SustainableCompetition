@@ -48,6 +48,9 @@ def run_slurm(
     logroot: str = "./logs",
 ):
     """Run trivial benchmarking method on slurm cluster."""
+    print(f"Benchmarking solvers in {solvers} using {len(benchmarks)} benchmarks")
+    print(f"Using machine {machine} with account {account} and {tasks_per_node} tasks per node.")
+
     solver_adaptor = get_solver_adaptor(solvers)
     instance_adaptor = get_instance_adaptor()
 

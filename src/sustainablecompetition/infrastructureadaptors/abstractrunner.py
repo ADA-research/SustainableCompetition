@@ -33,6 +33,8 @@ class AbstractRunner(ABC):
         Maintains the benchmarking process and blocks until benchmarking is finished (i.e., all jobs are completed).
         Also blocks until all consumers are finished.
         """
+        print(f"Starting runner with {len(benchmarkers)} benchmarkers and a total of {njobs} jobs to submit.")
+
         i = j = 0
         # submit njobs to the runner
         while j < njobs and i < len(benchmarkers):
