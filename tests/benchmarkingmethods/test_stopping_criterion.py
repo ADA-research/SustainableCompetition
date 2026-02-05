@@ -57,22 +57,22 @@ class TestMinimumAccuracyStoppingCriterion:
 
 class TestWilcoxonStoppingCriterion:
     def test_does_not_stop_initially(self, benchmark_ids, solver_ids):
-        criterion = WilcoxonStoppingCriterion(benchmark_ids, solver_ids[:2], min_accuracy=0.95)
+        criterion = WilcoxonStoppingCriterion(benchmark_ids, solver_ids[0], solver_ids[1:3], min_accuracy=0.95)
         assert criterion.should_stop() is False
 
     def test_does_not_stop_below_min_instances(self, benchmark_ids, solver_ids):
-        criterion = WilcoxonStoppingCriterion(benchmark_ids, solver_ids[:2], min_accuracy=0.95, min_instances=5)
+        criterion = WilcoxonStoppingCriterion(benchmark_ids, solver_ids[0], solver_ids[1:3], min_accuracy=0.95, min_instances=5)
         for bid in benchmark_ids[:4]:
             criterion.handle_result(make_result(bid, solver_ids[0]))
         assert criterion.should_stop() is False
 
     def test_handle_result_adds_benchmark(self, benchmark_ids, solver_ids):
-        criterion = WilcoxonStoppingCriterion(benchmark_ids, solver_ids[:2], min_accuracy=0.95)
+        criterion = WilcoxonStoppingCriterion(benchmark_ids, solver_ids[0], solver_ids[1:3], min_accuracy=0.95)
         criterion.handle_result(make_result(benchmark_ids[0], solver_ids[0]))
         assert benchmark_ids[0] in criterion.selected_benchmark_ids
 
     def test_stops_with_enough_instances(self, benchmark_ids, solver_ids):
-        criterion = WilcoxonStoppingCriterion(benchmark_ids, solver_ids[:2], min_accuracy=0.5, min_instances=5)
+        criterion = WilcoxonStoppingCriterion(benchmark_ids, solver_ids[0], solver_ids[1:3], min_accuracy=0.5, min_instances=5)
         for bid in benchmark_ids:
             criterion.handle_result(make_result(bid, solver_ids[0]))
             if criterion.should_stop():
@@ -80,8 +80,8 @@ class TestWilcoxonStoppingCriterion:
         # With all instances and a low threshold, it should eventually stop or exhaust instances
         assert criterion.should_stop() or len(criterion.selected_benchmark_ids) == len(benchmark_ids)
 
-    def test_pairs_initialized_correctly(self, benchmark_ids, solver_ids):
+    def test_sorted_solvers_initialized_correctly(self, benchmark_ids, solver_ids):
         ids = solver_ids[:3]
-        criterion = WilcoxonStoppingCriterion(benchmark_ids, ids, min_accuracy=0.95)
-        expected_pairs = [(ids[0], ids[1]), (ids[0], ids[2]), (ids[1], ids[2])]
-        assert criterion.pairs == expected_pairs
+        criterion = WilcoxonStoppingCriterion(benchmark_ids, ids[0], ids[1:], min_accuracy=0.95)
+        assert set(criterion.sorted_solver_ids) == set(ids[1:])
+        assert criterion.challenger == ids[0]

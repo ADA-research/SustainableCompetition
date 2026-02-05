@@ -15,7 +15,7 @@ __all__ = ["WilcoxonStoppingCriterion"]
 class WilcoxonStoppingCriterion(StoppingCriteria):
     """Stopping criterion that stops when a minimum ranking accuracy is reached with a Wilcoxon test."""
 
-    def __init__(self, benchmark_ids: list[str], solver_ids: list[str], min_accuracy: float, min_instances: int = 5):
+    def __init__(self, benchmark_ids: list[str], challenger_id: str, solvers_challenged: list[str], min_accuracy: float, min_instances: int = 5):
         super().__init__()
         self.benchmark_ids = benchmark_ids
         self.min_accuracy = min_accuracy
@@ -23,8 +23,36 @@ class WilcoxonStoppingCriterion(StoppingCriteria):
         self.selected_benchmark_ids = []
         db_path = importlib.resources.files("sustainablecompetition.data").joinpath("sustainablecompetition.db")
         self.db_adaptor = SqlDataAdaptor(db_path)
-        self.solvers = solver_ids
-        self.pairs = [(s1, s2) for i, s1 in enumerate(self.solvers) for s2 in self.solvers[i + 1 :]]
+
+        self.challenger = challenger_id
+
+        ## SORT SOLVERS
+
+        # Filter out benchmark instances where any solver has no performance data
+        valid_benchmark_ids = []
+        for benchmark_id in self.selected_benchmark_ids:
+            all_have_perf = True
+            for solver_id in solvers_challenged:
+                perf_col = self.db_adaptor.get_performances(solver_hash=solver_id, inst_hash=benchmark_id).get_column("perf")
+                if len(perf_col) == 0:
+                    all_have_perf = False
+                    break
+            if all_have_perf:
+                valid_benchmark_ids.append(benchmark_id)
+        performances = [
+            (
+                solver_id,
+                sum(
+                    [
+                        self.db_adaptor.get_performances(solver_hash=solver_id, inst_hash=benchmark_id).get_column("perf")[0]
+                        for benchmark_id in valid_benchmark_ids
+                    ]
+                ),
+            )
+            for solver_id in solvers_challenged
+        ]
+        sorted_solvers = sorted(performances, key=lambda x: x[1])
+        self.sorted_solver_ids = [solver_id for solver_id, _ in sorted_solvers]
 
     def should_stop(self) -> bool:
         if len(self.selected_benchmark_ids) == 0 or len(self.selected_benchmark_ids) < self.min_instances:
@@ -34,7 +62,7 @@ class WilcoxonStoppingCriterion(StoppingCriteria):
         valid_benchmark_ids = []
         for benchmark_id in self.selected_benchmark_ids:
             all_have_perf = True
-            for solver_id in self.solvers:
+            for solver_id in self.sorted_solver_ids + [self.challenger]:
                 perf_col = self.db_adaptor.get_performances(solver_hash=solver_id, inst_hash=benchmark_id).get_column("perf")
                 if len(perf_col) == 0:
                     all_have_perf = False
@@ -45,25 +73,36 @@ class WilcoxonStoppingCriterion(StoppingCriteria):
         if len(valid_benchmark_ids) < self.min_instances:
             return False
 
-        performances = {
-            solver_id: [
-                self.db_adaptor.get_performances(solver_hash=solver_id, inst_hash=benchmark_id).get_column("perf")[0] for benchmark_id in valid_benchmark_ids
-            ]
-            for solver_id in self.solvers
-        }
+        my_challenger_perfs = [
+            self.db_adaptor.get_performances(solver_hash=self.challenger, inst_hash=benchmark_id).get_column("perf")[0] for benchmark_id in valid_benchmark_ids
+        ]
+        has_progressed = True
         with warnings.catch_warnings():
             warnings.simplefilter(action="ignore", category=UserWarning)
-            undecided = []
-            for s1, s2 in self.pairs:
-                perf_i = performances[s1]
-                perf_j = performances[s2]
-                _, p_stop = wilcoxon(perf_i, perf_j, alternative="two-sided")
-                current_confidence: float = 1 - p_stop
-                if current_confidence < self.min_accuracy:
-                    undecided.append((s1, s2))
-            self.pairs = undecided
+            while has_progressed:
+                if len(self.sorted_solver_ids) == 0:
+                    return True
+                has_progressed = False
+                to_compare = self.sorted_solver_ids.pop()
+                perfs = [
+                    self.db_adaptor.get_performances(solver_hash=to_compare, inst_hash=benchmark_id).get_column("perf")[0]
+                    for benchmark_id in valid_benchmark_ids
+                ]
+                _, p_stop = wilcoxon(my_challenger_perfs, perfs, alternative="two-sided")
+                if 1 - p_stop >= self.min_accuracy:
+                    # Take a decision
+                    challenger_is_better = sum(my_challenger_perfs) < sum(perfs)
+                    if challenger_is_better:
+                        # Go to the next challenger
+                        has_progressed = True
+                    else:
+                        # We are definitively worse
+                        return False
+                else:
+                    # Indecisive
+                    self.sorted_solver_ids.append(to_compare)
 
-        return len(self.pairs) == 0
+        return False
 
     def handle_result(self, result: Result) -> None:
         self.selected_benchmark_ids.append(result.job.benchmark_id)
