@@ -5,8 +5,11 @@
 
 .vscode/
 logs/
-runinfo/
 venv/
+
+# parsl generated files and directories
+cmd_*.sh
+runinfo/
 
 # User-specific files
 *.rsuser
