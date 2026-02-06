@@ -53,7 +53,6 @@ def shutdown(signum, frame):
 
     parsl.dfk().cleanup()
     parsl.clear()
-    sys.exit(1)
 
 
 @bash_app
