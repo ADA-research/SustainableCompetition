@@ -10,7 +10,6 @@
 #SBATCH --nodes=1                       # only one node
 #SBATCH --ntasks=1                      # single task (process)
 #SBATCH --cpus-per-task=1               # single core
-#SBATCH --mem=2G                        # minimal memory
 
 source ./venv/bin/activate
 

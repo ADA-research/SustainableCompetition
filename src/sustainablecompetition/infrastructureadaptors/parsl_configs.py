@@ -46,7 +46,6 @@ def make_slurm_config(
     jobname: str = "benchmark_job",
     exclusive: bool = True,
     tasks_per_node: int = None,
-    mem_per_node: int = None,  # in MB; or leave None to skip
     nodes_per_block: int = 1,
     init_blocks: int = 1,
     min_blocks: int = 1,
@@ -58,8 +57,6 @@ def make_slurm_config(
     scheduler_opts = [f"#SBATCH --job-name={jobname}", "#SBATCH --no-requeue"]
     if account:
         scheduler_opts.append(f"#SBATCH --account={account}")
-    if mem_per_node:
-        scheduler_opts.append(f"#SBATCH --mem={mem_per_node}")
     if exclusive:
         scheduler_opts.append("#SBATCH --exclusive")
     if tasks_per_node:
