@@ -43,9 +43,17 @@ def shutdown(signum, frame):
         timeout or termination signals during job execution.
     """
     print(f"Received signal {signum}, initiating graceful shutdown...")
+
+    # Cancel all executor provider jobs
+    for ex in parsl.dfk().executors.values():
+        try:
+            ex.provider.cancel_all()
+        except AttributeError:
+            pass
+
     parsl.dfk().cleanup()
     parsl.clear()
-    sys.exit(0)
+    sys.exit(1)
 
 
 @bash_app
@@ -166,8 +174,14 @@ class ParslRunner(AbstractRunner):
         self.futures = []
 
     def __del__(self):
-        dfk = parsl.dfk()
-        dfk.cleanup()
+        # Cancel all executor provider jobs
+        for ex in parsl.dfk().executors.values():
+            try:
+                ex.provider.cancel_all()
+            except AttributeError:
+                pass
+
+        parsl.dfk().cleanup()
         parsl.clear()
 
     def run(self, benchmarkers: list["AbstractBenchmarker"], njobs: int = 1):
