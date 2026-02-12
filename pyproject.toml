@@ -29,11 +29,11 @@ dev = [
     "pytest>=8.3.5",
     "ruff>=0.12.11",
     "requests>=2.31.0",
-    "pytest-dependency>=0.6.0",
+    "pytest-dependency<0.6.0",
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"] # This tells setuptools to look in src/
 
 [tool.setuptools.package-data]
-"sustainablecompetition" = ["src/SustainableCompetition/data/SustainableCompetition-db/*.db"]
+"sustainablecompetition" = ["src/sustainablecompetition/data/SustainableCompetition-db/sustainablecompetition.db"]
