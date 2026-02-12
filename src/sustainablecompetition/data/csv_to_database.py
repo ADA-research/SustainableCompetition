@@ -1,6 +1,4 @@
 import csv
-import sqlite3
-import os
 
 
 def csv_to_sql(csv_file, sql_file, table_name):

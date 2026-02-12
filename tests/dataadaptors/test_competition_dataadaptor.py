@@ -1,6 +1,6 @@
+from importlib.resources import files
 import pytest
 from sustainablecompetition.dataadaptors.competition_dataadaptor import CompetitionDataAdaptor
-import importlib.resources
 
 
 INSTANCE_HASH = "b4f28bc5f78ead2bf150639790768df4"
@@ -95,7 +95,7 @@ ALL_COLS = [
 
 
 def build_adaptor() -> CompetitionDataAdaptor:
-    db_path = importlib.resources.files("sustainablecompetition.data").joinpath("sustainablecompetition.db")
+    db_path = files("sustainablecompetition.data.SustainableCompetition-db").joinpath("sustainablecompetition.db")
 
     cp_adaptor = CompetitionDataAdaptor.from_competition_csv("./examples/dataAdaptors/sat/main2024.csv", source_name="main2024", database_path=db_path)
     return cp_adaptor
