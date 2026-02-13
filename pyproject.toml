@@ -36,4 +36,4 @@ dev = [
 where = ["src"] # This tells setuptools to look in src/
 
 [tool.setuptools.package-data]
-"sustainablecompetition" = ["src/sustainablecompetition/data/SustainableCompetition-db/sustainablecompetition.db"]
+"sustainablecompetition" = ["sustainablecompetition/data/sustainablecompetition.db"]
