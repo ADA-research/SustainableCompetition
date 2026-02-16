@@ -16,7 +16,7 @@ def adaptor(db_path):
     return SqlDataAdaptor(db_path)
 
 
-def test_get_performances(adaptor,db_path):
+def test_get_performances(adaptor, db_path):
     print(db_path)
     # Test with all optional arguments
     df = adaptor.get_performances(
