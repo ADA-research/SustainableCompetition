@@ -19,7 +19,6 @@ from sustainablecompetition.benchmarkadaptors.satinstance import SATInstanceAdap
 from sustainablecompetition.infrastructureadaptors import control
 
 
-
 def get_solver_adaptor(solvers_csv: str) -> SolverAdaptor:
     """Create a SolverAdaptor from a CSV file."""
     solver_adaptor = SolverAdaptor()

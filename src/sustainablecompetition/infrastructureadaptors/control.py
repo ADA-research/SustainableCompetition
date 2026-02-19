@@ -43,7 +43,7 @@ def register_shutdown_handler():
     - SIGTERM: Termination request (e.g., kill command)
     - SIGHUP: Terminal closed or parent process terminated
     - SIGUSR1: User-defined signal 1 (custom timeout notification)
-    
+
     In SLURM jobs, use `#SBATCH --signal=B:USR1@300` to send SIGUSR1
     300 seconds before walltime limit, allowing graceful shutdown before timeout.
     """
