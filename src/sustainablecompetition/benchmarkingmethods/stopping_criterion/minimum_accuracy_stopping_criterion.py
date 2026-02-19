@@ -75,7 +75,7 @@ class MinimumAccuracyStoppingCriterion(StoppingCriteria):
                 solver_id,
                 sum(
                     [
-                        self.db_adaptor.get_performances(solver_hash=solver_id, inst_hash=benchmark_id).get_column("perf")[0]
+                        self.db_adaptor.get_performances(solver_id=solver_id, inst_hash=benchmark_id).get_column("perf")[0]
                         for benchmark_id in valid_benchmark_ids
                     ]
                 ),
