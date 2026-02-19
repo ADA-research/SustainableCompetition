@@ -10,12 +10,14 @@ import polars as pl
 from sustainablecompetition.infrastructureadaptors import slurm_limits
 
 from sustainablecompetition.infrastructureadaptors.parsl_configs import make_slurm_config
-from sustainablecompetition.infrastructureadaptors.parsl_runner import ParslRunner, set_slurm_script_path
+from sustainablecompetition.infrastructureadaptors.parsl_runner import ParslRunner
 from sustainablecompetition.benchmarkingmethods.trivial_benchmarker import TrivialBenchmarker
 from sustainablecompetition.resultconsumers.lambda_consumer import LambdaConsumer
 from sustainablecompetition.solveradaptors.executionwrapper import ExecutionWrapper
 from sustainablecompetition.solveradaptors.solveradaptor import SolverAdaptor
 from sustainablecompetition.benchmarkadaptors.satinstance import SATInstanceAdaptor
+from sustainablecompetition.infrastructureadaptors import control
+
 
 
 def get_solver_adaptor(solvers_csv: str) -> SolverAdaptor:
@@ -94,7 +96,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.requeue:
-        set_slurm_script_path(args.requeue)
+        control.set_slurm_requeue_script_path(args.requeue)
 
     # Load configuration from YAML file
     try:
@@ -119,6 +121,10 @@ if __name__ == "__main__":
     scheduler = scheduling.get("scheduler", "slurm")
 
     if scheduler == "slurm":
+        print("Running NEMESIS with SLURM scheduler...")
+
+        control.register_shutdown_handler()
+
         # Get the directory containing the config file
         config_dir = os.path.dirname(os.path.abspath(args.config))
 

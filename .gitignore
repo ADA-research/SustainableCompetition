@@ -6,6 +6,10 @@
 .vscode/
 logs/
 venv/
+config/*.results/
+parsl-master*.err
+parsl-master*.out
+parsl-master*.log
 
 # parsl generated files and directories
 cmd_*.sh

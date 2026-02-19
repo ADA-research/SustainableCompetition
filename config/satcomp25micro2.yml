@@ -13,10 +13,10 @@ checker_memory: 65536        # Memory limit for checkers in MB
 # Job scheduler configuration
 scheduling:
   scheduler: slurm
-  machine: floyd                  # machine/partition name for scheduler
-  account: iser # Account name for scheduler
+  machine: liskov                   # machine/partition name for scheduler
+  account: iser                     # Account name for scheduler
   tasks_per_node: 16                # Number of tasks per node
-  jobname: satcomp25micro2           # Job name for scheduler
+  jobname: satcomp25micro2          # Job name for scheduler
   workerinit: "export PYTHONNOUSERSITE=1; unset PYTHONPATH; source /nfs/home/iser/git/SustainableCompetition/venv/bin/activate; cd /nfs/home/iser/git/SustainableCompetition"  # Initialization commands for each worker node
   queuelimit: 2                 # Maximum number of slurm worker jobs to queue at once, skip this limit to determine limit automatically based on scheduler configuration
 

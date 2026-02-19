@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 from sustainablecompetition.benchmarkadaptors.abstractinstance import AbstractInstanceAdaptor
 from sustainablecompetition.solveradaptors.abstractexecutable import AbstractExecutable
 from sustainablecompetition.benchmarkatoms import Job, JobState, Result
+from sustainablecompetition.infrastructureadaptors import control
 
 
 logger = logging.getLogger(__name__)
@@ -111,12 +112,14 @@ class AbstractRunner(ABC):
         """
         while not all(j.state in FINISHED_STATES for j in self.jobs):
             for job in self.jobs:
+                if control.is_shutting_down():
+                    print("Runner is shutting down, exiting completions loop.")
+                    return
                 if job.state == JobState.RUNNING:
                     result = self.completed(job)
                     if result is not None:
                         yield result
-                    else:
-                        time.sleep(sleep_duration)
+                time.sleep(sleep_duration)
 
     @abstractmethod
     def cancel(self, job: Job):
