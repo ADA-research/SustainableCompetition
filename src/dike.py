@@ -86,8 +86,7 @@ def run_slurm(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="NEMESIS: Non-forgiving Evaluation and Measurement with Efficient, Sustainable Instance Sampling")
-    # In Greek mythology, Nemesis restores balance by punishing excessive ambition and undeserved success. She exposes hubris, ensuring that those who indulge in it face retribution without mercy.
+    parser = argparse.ArgumentParser(description="DIKE: Data-Informed Knowledge-driven Evaluation")
 
     parser.add_argument("config", type=str, help="Path to YAML configuration file")
     parser.add_argument("--requeue", type=str, default=None, help="Path to slurm script for requeuing; if not provided then requeuing is disabled.")
@@ -120,7 +119,7 @@ if __name__ == "__main__":
     scheduler = scheduling.get("scheduler", "slurm")
 
     if scheduler == "slurm":
-        print("Running NEMESIS with SLURM scheduler...")
+        print("Running with SLURM scheduler...")
 
         control.register_shutdown_handler()
 

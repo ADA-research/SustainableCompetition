@@ -13,4 +13,4 @@
 
 source ./venv/bin/activate
 
-./src/nemesis.py ./config/satcomp25.yml
+./src/dike.py ./config/satcomp25.yml
