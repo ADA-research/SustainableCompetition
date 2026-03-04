@@ -1,5 +1,5 @@
 import pytest
-from sustainablecompetition.dataadaptors.csv_dataadaptor import CsvDataAdaptor
+from DIKEBenchmarker.dataadaptors.csv_dataadaptor import CsvDataAdaptor
 
 
 INSTANCE_HASH = "b4f28bc5f78ead2bf150639790768df4"

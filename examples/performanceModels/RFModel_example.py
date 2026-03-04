@@ -1,12 +1,12 @@
-from sustainablecompetition.performancemodels.randomforestmodel import RandomForestPerformanceModel
+from DIKEBenchmarker.performancemodels.randomforestmodel import RandomForestPerformanceModel
 import polars as pl
-from sustainablecompetition.dataadaptors.sqlite_dataadaptor import SqlDataAdaptor
+from DIKEBenchmarker.dataadaptors.sqlite_dataadaptor import SqlDataAdaptor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import importlib.resources
 
 
-db_path = importlib.resources.files("sustainablecompetition.data.db").joinpath("sustainablecompetition.db")
+db_path = importlib.resources.files("DIKEBenchmarker.data.db").joinpath("sustainablecompetition.db")
 db_adaptor = SqlDataAdaptor(db_path)
 
 # gathering my data

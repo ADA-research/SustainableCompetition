@@ -1,8 +1,8 @@
 import pytest
 
 
-from sustainablecompetition.benchmarkatoms import Job
-from sustainablecompetition.benchmarkingmethods.trivial_benchmarker import TrivialBenchmarker
+from DIKEBenchmarker.benchmarkatoms import Job
+from DIKEBenchmarker.benchmarkingmethods.trivial_benchmarker import TrivialBenchmarker
 
 
 NJOBS = 50

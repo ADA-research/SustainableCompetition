@@ -1,5 +1,5 @@
 [project]
-name = "sustainablecompetition"
+name = "DIKEBenchmarker"
 version = "0.1.0"
 description = "Sustainable Competition"
 readme = "README.md"
@@ -40,4 +40,4 @@ dev = [
 where = ["src"] # This tells setuptools to look in src/
 
 [tool.setuptools.package-data]
-"sustainablecompetition" = ["sustainablecompetition/data/db/sustainablecompetition.db"]
+"DIKEBenchmarker" = ["DIKEBenchmarker/data/db/sustainablecompetition.db"]

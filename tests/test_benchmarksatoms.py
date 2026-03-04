@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from sustainablecompetition.benchmarkatoms import Job, JobState, JobStateError
+from DIKEBenchmarker.benchmarkatoms import Job, JobState, JobStateError
 
 # ---- test job.mark_submitted() ----
 

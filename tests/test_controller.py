@@ -1,9 +1,9 @@
 import polars as pl
-from sustainablecompetition.benchmarkatoms import Result
-from sustainablecompetition.benchmarkingmethods.trivial_benchmarker import TrivialBenchmarker
-from sustainablecompetition.dataadaptors.competition_dataadaptor import CompetitionDataAdaptor
-from sustainablecompetition.infrastructureadaptors.virtual_runner import VirtualRunner
-from sustainablecompetition.resultconsumers.lambda_consumer import LambdaConsumer
+from DIKEBenchmarker.benchmarkatoms import Result
+from DIKEBenchmarker.benchmarkingmethods.trivial_benchmarker import TrivialBenchmarker
+from DIKEBenchmarker.dataadaptors.competition_dataadaptor import CompetitionDataAdaptor
+from DIKEBenchmarker.infrastructureadaptors.virtual_runner import VirtualRunner
+from DIKEBenchmarker.resultconsumers.lambda_consumer import LambdaConsumer
 
 
 def test_run():
