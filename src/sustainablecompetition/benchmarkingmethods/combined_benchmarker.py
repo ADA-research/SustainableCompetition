@@ -1,4 +1,4 @@
-"""Benchmark Interfaces"""
+"""Benchmark Interfaces."""
 
 from sustainablecompetition.benchmarkatoms import Job, Result
 from sustainablecompetition.benchmarkingmethods.abstract_benchmarker import AbstractBenchmarker
@@ -9,9 +9,7 @@ __all__ = ["CombinedBenchmarker"]
 
 
 class CombinedBenchmarker(AbstractBenchmarker):
-    """
-    Decides which jobs to submit next; can depend on past results/dependencies.
-    """
+    """Decides which jobs to submit next; can depend on past results/dependencies."""
 
     def __init__(
         self,

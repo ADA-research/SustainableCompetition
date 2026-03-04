@@ -11,6 +11,14 @@ from parsl.providers import LocalProvider
 
 import polars as pl
 
+from sustainablecompetition.benchmarkingmethods.abstract_benchmarker import AbstractBenchmarker
+from sustainablecompetition.benchmarkingmethods.combined_benchmarker import CombinedBenchmarker
+from sustainablecompetition.benchmarkingmethods.instance_selectors.discrimination_instance_selector import DiscriminationInstanceSelector
+from sustainablecompetition.benchmarkingmethods.instance_selectors.random_instance_selector import RandomInstanceSelector
+from sustainablecompetition.benchmarkingmethods.instance_selectors.variance_based_instance_selector import VarianceBasedInstanceSelector
+from sustainablecompetition.benchmarkingmethods.stopping_criterion.minimum_accuracy_stopping_criterion import MinimumAccuracyStoppingCriterion
+from sustainablecompetition.benchmarkingmethods.stopping_criterion.percentage_stopping_criterion import PercentageStoppingCriterion
+from sustainablecompetition.benchmarkingmethods.stopping_criterion.wilcoxon_stopping_criterion import WilcoxonStoppingCriterion
 from sustainablecompetition.infrastructureadaptors import slurm_limits
 
 from sustainablecompetition.infrastructureadaptors.parsl_configs import make_slurm_config
@@ -36,10 +44,53 @@ def get_instance_adaptor() -> SATInstanceAdaptor:
     return instance_adaptor
 
 
+def get_benchmarker(benchmarking_method: dict, solver_id: str, checker_id: str, logroot) -> AbstractBenchmarker:
+    """Create a benchmarker based on the benchmarking method specified in the configuration."""    
+    # Base case: if selection method is allpairs, we can use the trivial benchmarker which evaluates all pairs of solvers and instances without any stopping criterion
+    if benchmarking_method["selection_method"] == "allpairs":
+        return TrivialBenchmarker(
+            benchmarks=benchmarking_method["benchmarks"],
+            solver_id=solver_id,
+            checker_id=checker_id,
+            logroot=logroot,
+        )
+    
+    # For other selection methods, we need to create the appropriate instance selector and stopping criterion based on the configuration
+    if benchmarking_method["stopping_criterion"] == "minimum-accuracy":
+        stopping_criterion = MinimumAccuracyStoppingCriterion(threshold=benchmarking_method["stopping_threshold"])
+    elif benchmarking_method["stopping_criterion"] == "percentage":
+        stopping_criterion = PercentageStoppingCriterion(percentage=benchmarking_method["stopping_threshold"])
+    elif benchmarking_method["stopping_criterion"] == "wilcoxon":
+        stopping_criterion = WilcoxonStoppingCriterion(p_value_threshold=benchmarking_method["stopping_threshold"])
+    else:
+        stopping_criterion = PercentageStoppingCriterion(percentage=1.0)  # No stopping, evaluate all selected instances
+    
+    
+    if benchmarking_method["selection_method"] == "random":
+        selector = RandomInstanceSelector(benchmarking_method["benchmarks"], solver_id)  # TODO: add seed to config
+    elif benchmarking_method["selection_method"] == "discrimination-based":
+        raise NotImplementedError("Discrimination-based selection method is not implemented yet.")
+        #selector = DiscriminationInstanceSelector(benchmarking_method["benchmarks"], solver_id, data_adaptor)  # TODO: add rho to config
+    elif benchmarking_method["selection_method"] == "variance-based":
+        raise NotImplementedError("Variance-based selection method is not implemented yet.")
+        #selector = VarianceBasedInstanceSelector(benchmarking_method["benchmarks"], solver_id, data_adaptor)  # TODO: add parameters to config
+    else:
+        raise ValueError(f"Unsupported selection method: {benchmarking_method['selection_method']}")
+    
+    return CombinedBenchmarker(
+        selector=selector, 
+        stopping_criterion=stopping_criterion,
+        benchmark_ids=benchmarking_method["benchmarks"],
+        solver_id=solver_id,
+        checker_id=checker_id,
+        logroot=logroot,
+    )
+
+
 def run_slurm(
-    benchmarks,
-    solvers,
-    resource_limits,
+    benchmarking_method: dict,
+    solvers_file: str,
+    resource_limits: dict,
     logroot,
     machine: str,
     account: str = None,
@@ -49,10 +100,16 @@ def run_slurm(
     queuelimit: int = None,
 ):
     """Run trivial benchmarking method on slurm cluster."""
-    print(f"Benchmarking solvers in {solvers} using {len(benchmarks)} benchmarks")
+    print(f"Benchmarking solvers in {solvers_file}")
+    print(
+        f"Using {len(benchmarking_method['benchmarks'])} benchmarks, "
+        f"selection method {benchmarking_method['selection_method']}, "
+        f"stopping criterion {benchmarking_method['stopping_criterion']} "
+        f"with threshold {benchmarking_method['stopping_threshold']}"
+    )
     print(f"Using machine {machine} with account {account} and {tasks_per_node} tasks per node.")
 
-    solver_adaptor = get_solver_adaptor(solvers)
+    solver_adaptor = get_solver_adaptor(solvers_file)
     instance_adaptor = get_instance_adaptor()
 
     queue_max = queuelimit or slurm_limits.compute_max_blocks(safety_factor=0.8, fallback=100)
@@ -69,7 +126,7 @@ def run_slurm(
 
     methods = []
     for sid in solver_adaptor.get_ids():
-        method = TrivialBenchmarker(benchmarks, sid, checker_id=solver_adaptor.get_checker(sid), logroot=logroot)
+        method = get_benchmarker(benchmarking_method, sid, checker_id=solver_adaptor.get_checker(sid), logroot=logroot)
         method.register_consumer(LambdaConsumer(print))
         methods.append(method)
 
@@ -89,25 +146,30 @@ def run_slurm(
 
 
 def run_local(
-    benchmarks,
-    solvers,
-    resource_limits,
+    benchmarking_method: dict,
+    solvers_file: str,
+    resource_limits: dict,
     logroot,
     parallel: int = 3,
     jobname: str = "benchmark",
 ):
     """Run trivial benchmarking method on local machine."""
-    print(f"Benchmarking solvers in {solvers} using {len(benchmarks)} benchmarks")
-    print(f"Running locally with parallel={parallel} and jobname={jobname}")
+    print(f"Benchmarking solvers in {solvers_file}")
+    print(
+        f"Using {len(benchmarking_method['benchmarks'])} benchmarks, "
+        f"selection method {benchmarking_method['selection_method']}, "
+        f"stopping criterion {benchmarking_method['stopping_criterion']} "
+        f"with threshold {benchmarking_method['stopping_threshold']}"
+    )
 
-    solver_adaptor = get_solver_adaptor(solvers)
+    solver_adaptor = get_solver_adaptor(solvers_file)
     instance_adaptor = get_instance_adaptor()
 
     config = Config(executors=[HighThroughputExecutor(label=jobname, max_workers_per_node=parallel, provider=LocalProvider())])
 
     methods = []
     for sid in solver_adaptor.get_ids():
-        method = TrivialBenchmarker(benchmarks, sid, checker_id=solver_adaptor.get_checker(sid), logroot=logroot)
+        method = get_benchmarker(benchmarking_method, sid, checker_id=solver_adaptor.get_checker(sid), logroot=logroot)
         method.register_consumer(LambdaConsumer(print))
         methods.append(method)
 
@@ -152,13 +214,20 @@ if __name__ == "__main__":
     config_dir = os.path.dirname(os.path.abspath(args.config))
 
     # Load benchmarks from CSV
-    benchmarks_file = os.path.join(config_dir, config.get("benchmarks"))
+    benchmarking = config.get("benchmarks", {})
+    benchmarks_file = benchmarking.get("file", "")
+    
     if not benchmarks_file or not os.path.isfile(benchmarks_file):
         print(f"Error: Benchmarks file '{benchmarks_file}' not found.")
         sys.exit(1)
-    df = pl.read_csv(benchmarks_file)
-    benchmarks = df.select("hash").to_series().to_list()
-
+    
+    benchmarking_method = {
+        "benchmarks": pl.read_csv(benchmarks_file).select("hash").to_series().to_list(),
+        "selection_method": benchmarking.get("selection_method", "allpairs"),
+        "stopping_criterion": benchmarking.get("stopping_criterion", "none"),
+        "stopping_threshold": benchmarking.get("stopping_threshold", 0.0),
+    }
+    
     # Load solvers file
     solvers_file = os.path.join(config_dir, config.get("solvers"))
     if not solvers_file or not os.path.isfile(solvers_file):
@@ -187,8 +256,8 @@ if __name__ == "__main__":
         control.register_shutdown_handler()
 
         run_slurm(
-            benchmarks=benchmarks,
-            solvers=solvers_file,
+            benchmarking_method=benchmarking_method,
+            solvers_file=solvers_file,
             resource_limits=resource_limits,
             logroot=results,
             machine=scheduling.get("machine"),
@@ -204,8 +273,8 @@ if __name__ == "__main__":
         control.register_shutdown_handler()
 
         run_local(
-            benchmarks=benchmarks,
-            solvers=solvers_file,
+            benchmarking_method=benchmarking_method,
+            solvers_file=solvers_file,
             resource_limits=resource_limits,
             logroot=results,
             parallel=scheduling.get("parallel", 3),

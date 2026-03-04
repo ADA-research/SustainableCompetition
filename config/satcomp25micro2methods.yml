@@ -23,7 +23,9 @@ scheduling:
 # Benchmarking method configuration
 benchmarks:
   file: ./satcomp25.instances.csv # Path to CSV containing benchmark hashes
-  selection_method: allpairs       # Run all solvers on all benchmarks
+  selection_method: random       # Methods: allpairs, random, discrimination-based, or variance-based
+  stopping_criterion: minimum_accuracy  # Stopping critieria: accuracy, percentage, wilcoxon
+  stopping_threshold: 0.95       # Threshold for stopping criterion, e.g. 0.95 for 95% accuracy, or 0.05 for p-value in wilcoxon test, or 0.2 for 20% of benchmarks solved
   
 # Benchmark and solver files
 solvers: ./satcomp25.solvers.csv      # Path to CSV containing solver paths
