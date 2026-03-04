@@ -55,6 +55,10 @@ Example Configuration
     checker_walltime: 70000
     checker_memory: 65536
 
+    benchmarks:
+      file: ./path/to/instances.csv
+      selection_method: allpairs
+
     scheduling:
       scheduler: slurm
       machine: cpu-partition
@@ -67,16 +71,22 @@ Example Configuration
 Configuration Keys
 ------------------
 
-benchmarks : str
-    Path to CSV file containing benchmark instances (relative to config file directory).
+benchmarks
+~~~~~~~~~~
 
-    **CSV File Format**
+Configuration for benchmark instances and selection strategy.
 
-    The CSV file specified by this configuration parameter should contain a list of benchmark instances to be used in the competition. The CSV file must follow this format:
+.. code-block:: yaml
 
-    - **Header**: The first row must contain column names. At minimum, it should include a ``hash`` column.
-    - **Data Rows**: Each subsequent row represents a single benchmark instance.
-    - **Column**: ``hash`` - A unique identifier (typically an MD5 hash) for each benchmark instance.
+   benchmarks:
+     file: ./path/to/instances.csv
+     selection_method: variance-based
+     stopping_criterion: percentage
+     stopping_threshold: 0.20
+
+- **file** (str): Path to CSV file containing benchmark instances (relative to config file directory).
+
+    The CSV file should contain a list of benchmark instances against which the solvers are to be ranked, and for which the selection method is to be applied. The CSV file must contain a header with a 'hash' column to uniquely identify each instance. Each subsequent row represents a single instance.
 
     **Example**
 
@@ -86,8 +96,28 @@ benchmarks : str
         00d5a43a481477fa4d56a2ce152a6cfb
         00fd8ac9acd186a7a78a2c4d92f90de1
         0205e2dffaef93a90c239df31755f2e1
-        032941f5f28c9ac53fa1c80d35f3206f
         ...
+
+- **selection_method** (str): Method for selecting instances. Options:
+  
+  - ``allpairs``: Run solver on all possible instances
+  - ``random``: Randomly select instances
+  - ``discrimination-based``: Select instances based on discrimination power
+  - ``variance-based``: Select instances based on runtime variance
+
+- **stopping_criterion** (str): Criterion for stopping benchmark evaluation. Options:
+  
+  - ``none``: No stopping criterion, evaluate all selected instances
+  - ``minimum-accuracy``: Stop when minimum accuracy is reached in ground truth solver results
+  - ``percentage``: Stop after evaluating a percentage of instances
+  - ``wilcoxon``: Stop based on Wilcoxon signed-rank test
+
+- **stopping_threshold** (float): Threshold value for the stopping criterion
+
+  - For ``minimum-accuracy``, this is the target accuracy (e.g., 0.95 for 95% accuracy).
+  - For ``percentage``, this is the percentage of instances to evaluate (e.g., 0.20 for 20% of instances).
+  - For ``wilcoxon``, this is the p-value threshold for the test (e.g., 0.05 for a significance level of 5%).
+   
 
 solvers : str
     Path to CSV file containing solver registry (relative to config file directory).

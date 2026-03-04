@@ -1,0 +1,227 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sustainablecompetition.solveradaptors.checkeradaptor &mdash; DIKE 1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=29a6c3e3"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DIKE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration File Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">sustainablecompetition</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DIKE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">sustainablecompetition.solveradaptors.checkeradaptor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sustainablecompetition.solveradaptors.checkeradaptor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module provides an adaptor for executing checkers of sat or unsat certificates.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sustainablecompetition.solveradaptors.abstractexecutable</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractExecutable</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CheckerAdaptor&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="CheckerAdaptor">
+<a class="viewcode-back" href="../../../sustainablecompetition.solveradaptors.html#sustainablecompetition.solveradaptors.checkeradaptor.CheckerAdaptor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CheckerAdaptor</span><span class="p">(</span><span class="n">AbstractExecutable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class for executing checkers of sat or unsat certificates.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the CheckerAdaptor with a registry, or from a serialized dictionary if provided.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+            <span class="s2">&quot;drat&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;./external/checkers/drat-trim&quot;</span><span class="p">,</span> <span class="s2">&quot;./external/checkers/cake_lpr&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            $BIN0 $INST $CERT -C -D -L $CERT.trimmed 1&gt; $TRIMMER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            $BIN1 $INST $CERT.trimmed 1&gt; $CHECKER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT.trimmed</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+            <span class="s2">&quot;dratbin&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;./external/checkers/drat-trim&quot;</span><span class="p">,</span> <span class="s2">&quot;./external/checkers/cake_lpr&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            $BIN0 $INST $CERT -i -C -D -L $CERT.trimmed 1&gt; $TRIMMER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            $BIN1 $INST $CERT.trimmed 1&gt; $CHECKER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT.trimmed</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+            <span class="s2">&quot;dpr&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;./external/checkers/dpr-trim&quot;</span><span class="p">,</span> <span class="s2">&quot;./external/checkers/cake_lpr&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            $BIN0 $INST $CERT -C -D -L $CERT.trimmed 1&gt; $TRIMMER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            $BIN1 $INST $CERT.trimmed 1&gt; $CHECKER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT.trimmed</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+            <span class="s2">&quot;dprbin&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;./external/checkers/dpr-trim&quot;</span><span class="p">,</span> <span class="s2">&quot;./external/checkers/cake_lpr&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            $BIN0 $INST $CERT -i -C -D -L $CERT.trimmed 1&gt; $TRIMMER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            $BIN1 $INST $CERT.trimmed 1&gt; $CHECKER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT.trimmed</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+            <span class="s2">&quot;grat&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;./external/checkers/gratgen&quot;</span><span class="p">,</span> <span class="s2">&quot;./external/checkers/gratchk&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            $BIN0 $INST $CERT -o $CERT.gratp -l $CERT.gratl 1&gt; $TRIMMER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT</span>
+<span class="sd">            $BIN1 @MLton max-heap 30G -- unsat $INST $CERT.gratl $CERT.gratp 1&gt; $CHECKER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT.gratl $CERT.gratp</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+            <span class="s2">&quot;gratbin&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;./external/checkers/gratgen&quot;</span><span class="p">,</span> <span class="s2">&quot;./external/checkers/gratchk&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            $BIN0 $INST $CERT -o $CERT.gratp -l $CERT.gratl -b 1&gt; $TRIMMER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT</span>
+<span class="sd">            $BIN1 @MLton max-heap 30G -- unsat $INST $CERT.gratl $CERT.gratp 1&gt; $CHECKER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT.gratl $CERT.gratp</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+            <span class="s2">&quot;veripb&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;./external/checkers/pboxide_veripb&quot;</span><span class="p">,</span> <span class="s2">&quot;./external/checkers/cake_pb_cnf&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            $BIN0 --cnf --elaborate $CERT.trimmed $INST $CERT 1&gt; $TRIMMER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT</span>
+<span class="sd">            $BIN1 $INST $CERT.trimmed 1&gt; $CHECKER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT.trimmed</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+            <span class="s2">&quot;satchecker&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;./external/checkers/gratchk&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            grep &quot;^v&quot; $CERT | sed -re &#39;s/^v//g&#39; &gt; $CERT.model</span>
+<span class="sd">            $BIN0 sat $INST $CERT.model 1&gt; $CHECKER_OUTPUT 2&gt;&amp;1</span>
+<span class="sd">            rm -f $CERT.model</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="CheckerAdaptor.format_command">
+<a class="viewcode-back" href="../../../sustainablecompetition.solveradaptors.html#sustainablecompetition.solveradaptors.checkeradaptor.CheckerAdaptor.format_command">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xid</span><span class="p">,</span> <span class="n">binaries</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">certificate</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">trimmer_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checker_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the command line for a given checker ID, replacing placeholders.&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_base</span><span class="p">(</span><span class="n">xid</span><span class="p">,</span> <span class="n">binaries</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_extra</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">certificate</span><span class="p">,</span> <span class="n">trimmer_output</span><span class="p">,</span> <span class="n">checker_output</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_extra</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">certificate</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">trimmer_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checker_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the command line for a given checker ID, replacing placeholders.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$INST&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$CERT&quot;</span><span class="p">,</span> <span class="n">certificate</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$TRIMMER_OUTPUT&quot;</span><span class="p">,</span> <span class="n">trimmer_output</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$CHECKER_OUTPUT&quot;</span><span class="p">,</span> <span class="n">checker_output</span><span class="p">)</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="CheckerAdaptor.parse_result">
+<a class="viewcode-back" href="../../../sustainablecompetition.solveradaptors.html#sustainablecompetition.solveradaptors.checkeradaptor.CheckerAdaptor.parse_result">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the result from the checker file.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;VERIFIED&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">line</span>
+        <span class="k">return</span> <span class="s2">&quot;UNKNOWN&quot;</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Ashlin Iser, Marie Anastacio, Théo Matricon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
